@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "645048266432",
+    "project_id": "senapati-d469d",
+    "storage_bucket": "senapati-d469d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645048266432:android:b965583b23d15f88f34725",
+        "android_client_info": {
+          "package_name": "com.app.maisenapati"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645048266432-ojeg94k8n4fk5tbfaeqd95rmab9n00pd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5-DlvUr5CGzROuFoXdliJrka0ZzaoSag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645048266432-ojeg94k8n4fk5tbfaeqd95rmab9n00pd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
