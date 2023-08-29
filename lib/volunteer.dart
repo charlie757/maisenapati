@@ -40,6 +40,7 @@ class _VolunteerState extends State<Volunteer> {
                   height: 20,
                 ),
                 CustomTextfield(
+                  onTap: () {},
                   hintText: 'Occupation *',
                   controller: occupationController,
                 ),
@@ -47,6 +48,7 @@ class _VolunteerState extends State<Volunteer> {
                   height: 10,
                 ),
                 CustomTextfield(
+                  onTap: () {},
                   hintText: 'Income *',
                   controller: incomeController,
                 ),

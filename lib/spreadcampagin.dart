@@ -78,6 +78,7 @@ class _SpreadCampaginState extends State<SpreadCampagin> {
                     height: 20,
                   ),
                   CustomTextfield(
+                    onTap: () {},
                     hintText: 'नाम *',
                     controller: nameController,
                     inputFormatters: [
@@ -93,6 +94,7 @@ class _SpreadCampaginState extends State<SpreadCampagin> {
                     height: 10,
                   ),
                   CustomTextfield(
+                    onTap: () {},
                     hintText: 'फ़ोन नंबर *',
                     controller: phoneController,
                     inputFormatters: [
@@ -110,6 +112,7 @@ class _SpreadCampaginState extends State<SpreadCampagin> {
                     height: 15,
                   ),
                   CustomTextfield(
+                    onTap: () {},
                     hintText: 'ज़िला का नाम*',
                     controller: jilaController,
                     inputFormatters: [
@@ -125,6 +128,7 @@ class _SpreadCampaginState extends State<SpreadCampagin> {
                     height: 15,
                   ),
                   CustomTextfield(
+                    onTap: () {},
                     hintText: 'विधानसभा *',
                     controller: vidhanController,
                     inputFormatters: [

@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
+  <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -23,18 +23,20 @@
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="sarkar">
+  <meta name="apple-mobile-web-app-title" content="मैं सेनापति राजस्थान">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>sarkar</title>
+  <title>मैं सेनापति राजस्थान</title>
   <link rel="manifest" href="manifest.json">
 
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-<script type="module">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+  <script src="https://unpkg.com/canvaskit-wasm@0.33.0/bin/canvaskit.js"></script>
+<link rel="preload" href="https://unpkg.com/canvaskit-wasm@0.33.0/bin/canvaskit.wasm" as="fetch" crossOrigin="anonymous">
+<script>
   import { initializeApp } from "firebase/app";
   import { getAnalytics } from "firebase/analytics";
   
@@ -54,11 +56,12 @@
 };
 
   // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  firebase.initializeApp(firebaseConfig);
+  // const app = initializeApp(firebaseConfig);
+  // const analytics = getAnalytics(app);
     </script>
   
-  
+  <script src="main.dart.js" type="application/javascript"></script>
   <script>
     // The value below is injected by flutter build, do not touch.
     var serviceWorkerVersion = null;
@@ -67,7 +70,12 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+  <script src="main.dart.js" type="application/javascript"></script>
   <script>
+    window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    return false;
+});
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({

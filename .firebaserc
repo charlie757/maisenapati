@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "senapati-d469d"
-  }
+    "default": "senapati-d469d",
+    "staging": "senapati-d469d"
+  },
+  "targets": {},
+  "etags": {}
 }

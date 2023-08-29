@@ -24,7 +24,7 @@ class _CustomBtnState extends State<CustomBtn> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
           // elevation: 0,
-          backgroundColor: const Color(0xffc85413),
+          backgroundColor: const Color(0xff2596be),
           shape: RoundedRectangleBorder(
               side: const BorderSide(color: Color(0xff1782b7)),
               borderRadius: BorderRadius.circular(5))),
@@ -45,10 +45,10 @@ class _CustomBtnState extends State<CustomBtn> {
             Text(
               widget.title,
               style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 20,
                   // fontFamily: LatoRegular,
                   color: Colors.white,
-                  fontWeight: FontWeight.w700),
+                  fontWeight: FontWeight.w800),
             ),
           ],
         ),

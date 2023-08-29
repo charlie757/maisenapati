@@ -33,10 +33,14 @@ dependencies:
     sdk: flutter
   responsive_framework:
   firebase_core:
-  firebase_auth: ^4.7.3
+  firebase_auth: ^3.2.0
   cloud_firestore:
   carousel_slider: ^4.2.1
   infinite_carousel:
+  get: ^4.6.5
+  provider: ^6.0.5
+  url_strategy: ^0.2.0
+  firebase_core_platform_interface: 4.5.1
   
 
 
@@ -84,12 +88,18 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-      - family: tekoSemi
+      - family: tekoRegular
         fonts:
-        - asset: assets/fonts/Teko-SemiBold.ttf
+        - asset: assets/fonts/Teko-Regular.ttf
+      - family: tekoMedium
+        fonts:
+        - asset: assets/fonts/Teko-Medium.ttf
       - family: briyaniSemi
         fonts:
         - asset: assets/fonts/Biryani-SemiBold.ttf
+      - family: tekoSemi
+        fonts:
+        - asset: assets/fonts/Teko-SemiBold.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

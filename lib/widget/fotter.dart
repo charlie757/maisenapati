@@ -1,20 +1,105 @@
-import 'dart:js';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:sarkar/disclimar.dart';
 import 'package:sarkar/privacypolicy.dart';
 
 Widget fotterWidget(BuildContext context) {
+  bool isMobile = ResponsiveBreakpoints.of(context).isMobile;
+  bool isTablet = ResponsiveBreakpoints.of(context).isTablet;
+
+  return isMobile || isTablet
+      ? mobileTabletDesign(context)
+      : webDesign(context);
+}
+
+Widget mobileTabletDesign(BuildContext context) {
+  return Container(
+    height: 115,
+    color: const Color(0xffbd9766),
+    padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Get.to(Disclimar(),
+                    transition: Transition.fade,
+                    duration: const Duration(milliseconds: 100));
+              },
+              child: const Text(
+                'DISCLAIMER',
+                style: TextStyle(fontSize: 15, color: Colors.white),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+              child: VerticalDivider(
+                color: Colors.white,
+                thickness: 1.5,
+              ),
+            ),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                Get.to(PrivacyPolicy(),
+                    transition: Transition.fade,
+                    duration: const Duration(milliseconds: 100));
+              },
+              child: const Text(
+                'PRIVACY POLICY',
+                style: TextStyle(fontSize: 15, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            socialContainer('assets/icons/facebook.png'),
+            const SizedBox(
+              width: 10,
+            ),
+            socialContainer('assets/icons/twitter2.png'),
+            const SizedBox(
+              width: 10,
+            ),
+            socialContainer('assets/icons/youtube.png'),
+            const SizedBox(
+              width: 10,
+            ),
+            socialContainer('assets/icons/instra2.png'),
+          ],
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        const Text(
+          'Copyright © 2023 - All Rights Reserved.',
+          style: TextStyle(color: Colors.white, fontSize: 15),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget webDesign(BuildContext context) {
   return Container(
     height: 60,
-    color: Colors.black,
+    color: const Color(0xffbd9766),
     padding: const EdgeInsets.only(left: 20, right: 20),
     child: Row(
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Disclimar()));
+            Get.to(Disclimar(),
+                transition: Transition.fade,
+                duration: const Duration(milliseconds: 100));
           },
           child: const Text(
             'DISCLAIMER',
@@ -31,8 +116,9 @@ Widget fotterWidget(BuildContext context) {
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => PrivacyPolicy()));
+            Get.to(PrivacyPolicy(),
+                transition: Transition.fade,
+                duration: const Duration(milliseconds: 100));
           },
           child: const Text(
             'PRIVACY POLICY',
@@ -40,36 +126,43 @@ Widget fotterWidget(BuildContext context) {
           ),
         ),
         const Spacer(),
-        socialContainer(Color(0xff3B5998), 'assets/icons/fb.png'),
+        socialContainer('assets/icons/facebook.png'),
         const SizedBox(
           width: 15,
         ),
-        socialContainer(Color(0xff55ACEE), 'assets/icons/twitter.png'),
+        socialContainer('assets/icons/twitter2.png'),
         const SizedBox(
           width: 15,
         ),
-        socialContainer(Color(0xffbb0000), 'assets/icons/yt.png'),
+        socialContainer('assets/icons/youtube.png'),
         const SizedBox(
           width: 15,
         ),
-        socialContainer(Color(0xff125688), 'assets/icons/instra.png'),
+        socialContainer('assets/icons/instra3.png'),
+        const Spacer(),
+        const Text(
+          'Copyright © 2023 - All Rights Reserved.',
+          style: TextStyle(color: Colors.white, fontSize: 15),
+        ),
       ],
     ),
   );
 }
 
-Widget socialContainer(Color color, String img) {
+Widget socialContainer(String img) {
   return Container(
     height: 45,
     width: 45,
     alignment: Alignment.center,
-    decoration:
-        BoxDecoration(borderRadius: BorderRadius.circular(17), color: color),
-    padding: EdgeInsets.all(5),
+    decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(17),
+        color: const Color(0xff2596be)),
+    // padding: EdgeInsets.all(10),
     child: Image.asset(
       img,
-      // height: 25,
-      // width: 25,
+      height: 25,
+      width: 25,
+      fit: BoxFit.cover,
     ),
   );
 }
