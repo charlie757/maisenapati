@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:sarkar/disclimar.dart';
 import 'package:sarkar/privacypolicy.dart';
+import 'package:sarkar/utils/routes.dart';
 
 Widget fotterWidget(BuildContext context) {
   bool isMobile = ResponsiveBreakpoints.of(context).isMobile;
@@ -25,13 +26,16 @@ Widget mobileTabletDesign(BuildContext context) {
           children: [
             GestureDetector(
               onTap: () {
-                Get.to(Disclimar(),
-                    transition: Transition.fade,
-                    duration: const Duration(milliseconds: 100));
+                Get.toNamed(
+                  Routes.disclaimer,
+                );
               },
-              child: const Text(
-                'DISCLAIMER',
-                style: TextStyle(fontSize: 15, color: Colors.white),
+              child: const MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: Text(
+                  'DISCLAIMER',
+                  style: TextStyle(fontSize: 15, color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(
@@ -44,13 +48,16 @@ Widget mobileTabletDesign(BuildContext context) {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                Get.to(PrivacyPolicy(),
-                    transition: Transition.fade,
-                    duration: const Duration(milliseconds: 100));
+                Get.toNamed(
+                  Routes.privacy,
+                );
               },
-              child: const Text(
-                'PRIVACY POLICY',
-                style: TextStyle(fontSize: 15, color: Colors.white),
+              child: const MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: Text(
+                  'PRIVACY POLICY',
+                  style: TextStyle(fontSize: 15, color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -65,7 +72,7 @@ Widget mobileTabletDesign(BuildContext context) {
             const SizedBox(
               width: 10,
             ),
-            socialContainer('assets/icons/twitter2.png'),
+            socialContainer('assets/icons/twitter.png'),
             const SizedBox(
               width: 10,
             ),
@@ -73,7 +80,7 @@ Widget mobileTabletDesign(BuildContext context) {
             const SizedBox(
               width: 10,
             ),
-            socialContainer('assets/icons/instra2.png'),
+            socialContainer('assets/icons/instagram.png'),
           ],
         ),
         const SizedBox(
@@ -97,13 +104,16 @@ Widget webDesign(BuildContext context) {
       children: [
         GestureDetector(
           onTap: () {
-            Get.to(Disclimar(),
-                transition: Transition.fade,
-                duration: const Duration(milliseconds: 100));
+            Get.toNamed(
+              Routes.disclaimer,
+            );
           },
-          child: const Text(
-            'DISCLAIMER',
-            style: TextStyle(fontSize: 15, color: Colors.white),
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Text(
+              'DISCLAIMER',
+              style: TextStyle(fontSize: 15, color: Colors.white),
+            ),
           ),
         ),
         Container(
@@ -116,13 +126,16 @@ Widget webDesign(BuildContext context) {
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            Get.to(PrivacyPolicy(),
-                transition: Transition.fade,
-                duration: const Duration(milliseconds: 100));
+            Get.toNamed(
+              Routes.privacy,
+            );
           },
-          child: const Text(
-            'PRIVACY POLICY',
-            style: TextStyle(fontSize: 15, color: Colors.white),
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Text(
+              'PRIVACY POLICY',
+              style: TextStyle(fontSize: 15, color: Colors.white),
+            ),
           ),
         ),
         const Spacer(),
@@ -130,7 +143,7 @@ Widget webDesign(BuildContext context) {
         const SizedBox(
           width: 15,
         ),
-        socialContainer('assets/icons/twitter2.png'),
+        socialContainer('assets/icons/twitter.png'),
         const SizedBox(
           width: 15,
         ),
@@ -138,7 +151,7 @@ Widget webDesign(BuildContext context) {
         const SizedBox(
           width: 15,
         ),
-        socialContainer('assets/icons/instra3.png'),
+        socialContainer('assets/icons/instagram.png'),
         const Spacer(),
         const Text(
           'Copyright © 2023 - All Rights Reserved.',

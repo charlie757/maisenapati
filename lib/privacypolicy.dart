@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicy extends StatefulWidget {
   const PrivacyPolicy({super.key});
@@ -10,30 +12,286 @@ class PrivacyPolicy extends StatefulWidget {
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
   @override
   Widget build(BuildContext context) {
+    final headingStyle = TextStyle(
+        fontSize: 30, color: Colors.black, fontWeight: FontWeight.w400);
+
+    final style = TextStyle(
+        fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding:
-              const EdgeInsets.only(left: 30, right: 30, top: 30, bottom: 30),
+          padding: const EdgeInsets.only(bottom: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'Privacy Policy',
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w700),
+            children: [
+              header(headingStyle),
+              const SizedBox(
+                height: 25,
               ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                  "No warranties\nnhi sahega rajasthan (hereinafter referred to as the “website”) is provided “as is” without any representations or warranties, express or implied. This website makes no representations or warranties in relation to this website or the information and materials provided on this website.\n\nWithout prejudice to the generality of the preceding paragraph, the website does not warrant that: \n\nThis website will be constantly available, or available at all; or the information on this website is complete, true, accurate or non-misleading.\nNothing on this website constitutes, or is meant to constitute, advice of any kind.\n\nLimitations of liability\nThe website will not be liable to you (whether under the law of contracts, the law of torts or otherwise) in relation to the contents of, or use of, or otherwise in connection with, this website\n\nfor any direct loss;\nfor any indirect, special, or consequential loss; or\nfor any business losses, loss of revenue, income, profits, or anticipated savings, loss of contracts or business relationships, loss of reputation or goodwill, or loss or corruption of information or data.\nThese limitations of liability apply even if the website has been expressly advised of the potential loss.\n\nExceptions\nNothing in this website disclaimer will exclude or limit any warranty implied by law that it would be unlawful to exclude or limit, and nothing in this website disclaimer will exclude or limit this website’s liability in respect of any:\n\nfraud or fraudulent misrepresentation on the part of the website; or matter which it would be illegal or unlawful for the website to exclude or limit, or to attempt or purport to exclude or limit, its liability. Reasonableness\nBy using this website, you agree that the exclusions and limitations of liability set out in this website disclaimer are reasonable.\n\nIf you do not think they are reasonable, you must not use this website.\nOther parties\nYou accept that, as a political campaigning entity, the website has an interest in limiting the personal liability of its staff and volunteers. You agree that you will not bring any claim personally against the website’s staff or volunteers regarding any losses you suffer in connection with the website.")
+              content(headingStyle, style)
             ],
           ),
         ),
       ),
     );
+  }
+
+  header(style) {
+    return Container(
+      height: 100,
+      width: double.infinity,
+      alignment: Alignment.center,
+      color: const Color(0xffbd9766),
+      padding: const EdgeInsets.only(left: 30, right: 30),
+      child: Text(
+        'मैं सेनापति राजस्थान - Main Senapati Rajasthan',
+        style: style,
+      ),
+    );
+  }
+
+  content(headingStyle, style) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, right: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Privacy Policy', style: headingStyle),
+          const SizedBox(
+            height: 10,
+          ),
+          Text.rich(TextSpan(
+              text: 'Your privacy is important to ',
+              style: style,
+              children: [
+                TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        urlLauncher('https://mainsenapatirajasthan.in/');
+                      },
+                    text: 'https://mainsenapatirajasthan.in/',
+                    style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15),
+                    children: [
+                      TextSpan(
+                          text:
+                              ' (hereinafter referred to as the “website”). This privacy statement provides information about the personal information that the website collects, and the ways in which the website uses that personal information.',
+                          style: style)
+                    ])
+              ])),
+          const SizedBox(
+            height: 25,
+          ),
+          Text(
+            'Personal information collection',
+            style: headingStyle,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+              'The website may collect and use the following kinds of personal information:',
+              style: style),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style,
+              'information about your use of this website (including browsing patterns and behaviour);'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style,
+              'information that you provide using for the purpose of registering with the website (including contact details);'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style,
+              'information about transactions carried out over this website;'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style,
+              'information that you provide for the purpose of subscribing to the website services (including SMS and email alerts); and any other information that you send to fellow users and webmaster.'),
+          const SizedBox(
+            height: 23,
+          ),
+          Text(
+            'Using personal information',
+            style: headingStyle,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'The website may use your personal information to:',
+            style: style,
+          ),
+          const SizedBox(
+            height: 23,
+          ),
+          textWithDots(style, 'administer this website;'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style, 'personalize the website for you;'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(
+              style, 'enable your access to and use of the website services;'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style, 'publish information about you on the website;'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style, 'send you marketing communications.'),
+          const SizedBox(
+            height: 20,
+          ),
+          textWithDots(style,
+              'Where the website discloses your personal information to its agents or subcontractors for these purposes, the agent or sub-contractor in question will be obligated to use that personal information in accordance with the terms of this privacy statement.'),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'In addition to the disclosures reasonably necessary for the purposes identified elsewhere above, the website may disclose your personal information to the extent that it is required to do so by law, in connection with any legal proceedings or prospective legal proceedings, and in order to establish, exercise or defend its legal rights.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 25,
+          ),
+          Text(
+            'Securing your data',
+            style: headingStyle,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'The website will take reasonable technical and organisational precautions to prevent the loss, misuse or alteration of your personal information.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            'The website will store all the personal information you provide on its secure servers.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 25,
+          ),
+          Text(
+            'Updating this statement',
+            style: headingStyle,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'The website may update this privacy policy by posting a new version on this website.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            'You should check this page occasionally to ensure you are familiar with any changes.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 25,
+          ),
+          Text(
+            'Other websites',
+            style: headingStyle,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'This website contains links to other websites.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            'The website is not responsible for the privacy policies or practices of any third party.',
+            style: style,
+          ),
+          const SizedBox(
+            height: 25,
+          ),
+          Text(
+            'Contact Webmaster',
+            style: headingStyle,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text.rich(TextSpan(
+              text:
+                  'If you have any questions about this privacy policy or the website’s treatment of your personal information, please write to: ',
+              style: style,
+              children: [
+                TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        final Uri params = Uri(
+                          scheme: 'mailto',
+                          path: 'admin@mainsenapatirajasthan.in',
+                        );
+                        urlLauncher(params.toString());
+                      },
+                    text: 'admin@mainsenapatirajasthan.in',
+                    style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400))
+              ]))
+        ],
+      ),
+    );
+  }
+
+  textWithDots(style1, String text) {
+    return Container(
+      padding: const EdgeInsets.only(left: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 6),
+            child: Icon(
+              Icons.circle,
+              size: 7,
+            ),
+          ),
+          const SizedBox(
+            width: 6,
+          ),
+          Flexible(
+            child: Text(
+              text,
+              style: style1,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  urlLauncher(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

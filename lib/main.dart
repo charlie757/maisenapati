@@ -7,7 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sarkar/dashboard.dart';
+import 'package:sarkar/disclimar.dart';
+import 'package:sarkar/privacypolicy.dart';
 import 'package:sarkar/providers/dashboardprovider.dart';
+import 'package:sarkar/utils/routes.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
@@ -56,6 +59,20 @@ class MyApp extends StatelessWidget {
           ],
         ),
         debugShowCheckedModeBanner: false,
+        getPages: [
+          GetPage(
+              name: Routes.privacy,
+              page: () => const PrivacyPolicy(),
+              transition: Transition.fade,
+              transitionDuration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut),
+          GetPage(
+              name: Routes.disclaimer,
+              page: () => const Disclaimer(),
+              transition: Transition.fade,
+              transitionDuration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut),
+        ],
         title: 'मैं सेनापति राजस्थान',
         theme: ThemeData(
           primarySwatch: Colors.blue,

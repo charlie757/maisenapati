@@ -21,36 +21,39 @@ class CustomBtn extends StatefulWidget {
 class _CustomBtnState extends State<CustomBtn> {
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          // elevation: 0,
-          backgroundColor: const Color(0xff2596be),
-          shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Color(0xff1782b7)),
-              borderRadius: BorderRadius.circular(5))),
-      onPressed: widget.onTap,
-      child: Container(
-        alignment: Alignment.center,
-        height: widget.height,
-        width: widget.width,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            widget.isLoading
-                ? Image.asset(
-                    'assets/icons/pran.jpeg',
-                    color: Colors.black,
-                  )
-                : Container(),
-            Text(
-              widget.title,
-              style: const TextStyle(
-                  fontSize: 20,
-                  // fontFamily: LatoRegular,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800),
-            ),
-          ],
+    return MouseRegion(
+      cursor: SystemMouseCursors.text,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            elevation: 10,
+            backgroundColor: const Color(0xff2596be),
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(color: Color(0xff1782b7)),
+                borderRadius: BorderRadius.circular(5))),
+        onPressed: widget.onTap,
+        child: Container(
+          alignment: Alignment.center,
+          height: widget.height,
+          width: widget.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              widget.isLoading
+                  ? Image.asset(
+                      'assets/icons/pran.jpeg',
+                      color: Colors.black,
+                    )
+                  : Container(),
+              Text(
+                widget.title,
+                style: const TextStyle(
+                    fontSize: 20,
+                    // fontFamily: LatoRegular,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800),
+              ),
+            ],
+          ),
         ),
       ),
     );

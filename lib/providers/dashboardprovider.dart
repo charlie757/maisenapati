@@ -5,10 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sarkar/helper.dart/custombtn.dart';
 import 'package:sarkar/helper.dart/customtextfield.dart';
-import 'package:sarkar/spreadcampagin.dart';
 import 'package:sarkar/utils/collectionreference.dart';
 import 'package:sarkar/utils/showcircleprogressdialog.dart';
-import 'package:sarkar/volunteer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardProvider extends ChangeNotifier {
   // 0---default form
@@ -28,7 +27,7 @@ class DashboardProvider extends ChangeNotifier {
   // validation variable
   bool nameValidation = false;
   bool phoneValidation = false;
-  bool jilaValidation = false;
+  bool districtValidation = false;
   bool vidhanValidation = false;
   bool ageValidation = false;
   bool gendorValidation = false;
@@ -42,13 +41,13 @@ class DashboardProvider extends ChangeNotifier {
 
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
-  final jilaController = TextEditingController();
+  final districtController = TextEditingController();
   final vidhanController = TextEditingController();
   final otpController = TextEditingController();
   final ageController = TextEditingController();
   final gendorController = TextEditingController();
-  final secondForm1Controller = TextEditingController();
-  final secondForm2Controller = TextEditingController();
+  final educationController = TextEditingController();
+  final businessController = TextEditingController();
   String volunteer1SelectedValue = '';
   String volunteer2SelectedValue = '';
   String volunteer3SelectedValue = '';
@@ -57,13 +56,60 @@ class DashboardProvider extends ChangeNotifier {
   List gendorList = ['पुरुष', 'महिला', 'अन्य'];
   int selectedGendor = -1;
   List districtList = [];
-  int selectedJila = -1;
+  int selectedDistrict = -1;
   int selectedVidhan = -1;
   int selectedIndex = 0;
   bool isVidhanRead = true;
+
+  // education
+  List educationList = [
+    'उच्चतर माध्यमिक (10वीं पास)',
+    'उच्चतर माध्यमिक (12वीं पास)',
+    'स्नातक (बैचलर्स डिग्री)',
+    'स्नातकोत्तर (मास्टर्स डिग्री)',
+    'डिप्लोमा',
+    'पोस्ट ग्रेजुएशन',
+    'डॉक्टरेट',
+    'पेशेवर डिग्री / प्रमाणपत्र',
+    'व्यावसायिक प्रशिक्षण / शिक्षा',
+    'अन्य (कृपया नीचे विस्तार से बताएं)'
+  ];
+  int selectedEducation = -1;
+  bool isReadEducation = true;
+
+  List businessList = [
+    'विद्यार्थी (छात्र)',
+    'कर्मचारी (नौकरशाही)',
+    'व्यवसायी (व्यापार)',
+    'किसान (कृषि)',
+    'शिक्षक (शिक्षा)',
+    'डॉक्टर (मेडिकल)',
+    'इंजीनियर (तकनीकी)',
+    'महिला गृहिणी (घरेलू)',
+    'स्वतंत्र पेशेवर (उद्यमिता)',
+    'बेरोज़गार (असंगठित)',
+    'पेंशनर (अनुभवी)',
+    'पत्रकार (मीडिया)',
+    'अध्यापक (शिक्षा)',
+    'बच्चों की देखभाल (देखभाल)',
+    'विपणन / बिक्री (बिज़नेस)',
+    'वैद्यकीय पेशेवर (हेल्थकेयर)',
+    'कला / संगीत (कला)',
+    'सेना / पुलिस (सुरक्षा)',
+    'सामाजिक कार्यकर्ता (समाज सेवा)',
+    'वाणिज्यिक कर्मचारी (ऑफिस काम)',
+    'अन्य (कृपया नीचे विस्तार से बताएं)'
+  ];
+  int selectedBusiness = -1;
+  bool isReadBusiness = true;
+
+  /// selected user details
+  String currentUserDistrictId = '';
+  int userWhstpCounter = 0;
+  String currentUserId = '';
   fetchDistrctData() async {
     districtList.clear();
-    district.get().then((value) {
+    districtRef.get().then((value) {
       districtList = value.docs;
     });
   }
@@ -186,93 +232,78 @@ class DashboardProvider extends ChangeNotifier {
                     userIndex == 6
                         ? successfullyRegisteredVolunteer()
                         : userIndex == 5
-                            ? joinAsVolunteerWidget(() {
-                                if (secondForm1Controller.text.isEmpty) {
-                                  volunteer1Validation = true;
-                                  state(() {});
-                                  notifyListeners();
-                                } else {
-                                  volunteer1Validation = false;
-                                  state(() {});
-                                  notifyListeners();
-                                }
-                                if (secondForm2Controller.text.isEmpty) {
-                                  volunteer2Validation = true;
-                                  state(() {});
-                                  notifyListeners();
-                                } else {
-                                  volunteer2Validation = false;
-                                  state(() {});
-                                  notifyListeners();
-                                }
-                                if (volunteer1SelectedValue.isEmpty) {
-                                  volunteer3Validation = true;
-                                  state(() {});
-                                } else {
-                                  volunteer3Validation = false;
-                                  state(() {});
-                                }
-                                if (volunteer2SelectedValue.isEmpty) {
-                                  volunteer4Validation = true;
-                                  state(() {});
-                                } else {
-                                  volunteer4Validation = false;
-                                  state(() {});
-                                }
-                                if (volunteer3SelectedValue.isEmpty) {
-                                  volunteer5Validation = true;
-                                  state(() {});
-                                } else {
-                                  volunteer5Validation = false;
-                                  state(() {});
-                                }
-                                if (volunteer4SelectedValue.isEmpty) {
-                                  volunteer6Validation = true;
-                                  state(() {});
-                                } else {
-                                  volunteer6Validation = false;
-                                  state(() {});
-                                }
-                                if (!volunteer1Validation &&
-                                    !volunteer2Validation &&
-                                    !volunteer3Validation &&
-                                    !volunteer4Validation &&
-                                    !volunteer5Validation &&
-                                    !volunteer6Validation) {
-                                  showCircleProgressDialog(context);
-                                  usersRef
-                                      .where('number',
-                                          isEqualTo: phoneController.text)
-                                      .get()
-                                      .then((value) {
-                                    final id = usersRef
-                                        .doc(value.docs[0]['id'])
-                                        .collection('volunteer')
-                                        .doc()
-                                        .id;
-                                    usersRef
-                                        .doc(value.docs[0]['id'])
-                                        .collection('volunteer')
-                                        .doc(id)
-                                        .set({
-                                      'volntr1': secondForm1Controller.text,
-                                      'volntr2': secondForm2Controller.text,
-                                      'volntr3': volunteer1SelectedValue,
-                                      'volntr4': volunteer2SelectedValue,
-                                      'volntr5': volunteer3SelectedValue,
-                                      'volntr6': volunteer4SelectedValue,
-                                      'volntrId': id
-                                    }).then((value) {
-                                      userIndex = 6;
-                                      Get.back();
-                                      state(() {});
-                                      notifyListeners();
-                                    });
-                                  });
-                                }
-                              })
+                            ? joinAsVolunteerWidget(
+                                isMobile,
+                                state,
+                              )
                             : userIndex == 4
-                                ? spreadWidget(() {})
+                                ? spreadWidget(() {
+                                    districtRef
+                                        .doc(currentUserDistrictId
+                                            .toString()
+                                            .removeAllWhitespace)
+                                        .collection('vidhansabha')
+                                        .where('nameHindi',
+                                            isEqualTo: userVidhan)
+                                        .get()
+                                        .then((value) {
+                                      districtRef
+                                          .doc(currentUserDistrictId
+                                              .toString()
+                                              .removeAllWhitespace)
+                                          .collection('vidhansabha')
+                                          .doc(value.docs[0]['id'])
+                                          .collection('whatsappgrp')
+                                          .where('isAdd', isEqualTo: true)
+                                          .orderBy('createdAt',
+                                              descending: false)
+                                          .get()
+                                          .then((wvalue) {
+                                        print("wvalue...$wvalue");
+                                        // set the counter for user in usercollection
+                                        // if(userWhstpCounter)
+                                        // usersRef
+                                        //     .doc(currentUserDistrictId
+                                        //         .toString()
+                                        //         .removeAllWhitespace)
+                                        //     .update({
+                                        //   'whstpJoinStatus': true,
+                                        //   // 'whstpCounter':
+                                        //   //     (userWhstpCounter + 1).toString()
+                                        // }).then((uservalue) {
+                                        // set the counter on whatsapp grp
+                                        districtRef
+                                            .doc(currentUserDistrictId
+                                                .toString()
+                                                .removeAllWhitespace)
+                                            .collection('vidhansabha')
+                                            .doc(value.docs[0]['id'])
+                                            .collection('whatsappgrp')
+                                            .doc(wvalue.docs[0]['id'])
+                                            .update({
+                                          'counter': (int.parse(wvalue.docs[0]
+                                                      ['counter']) +
+                                                  1)
+                                              .toString(),
+                                          'isAdd': (int.parse(wvalue.docs[0]
+                                                          ['counter']) <
+                                                      1008 &&
+                                                  int.parse(wvalue.docs[0]
+                                                          ['counter']) ==
+                                                      1009)
+                                              ? false
+                                              : true
+                                        }).then((disValue) {
+                                          urlLauncher(
+                                              wvalue.docs[0]['grplink']);
+                                        });
+                                      });
+                                      // });
+                                    });
+                                  }, () {
+                                    userIndex = 5;
+                                    state(() {});
+                                  })
                                 : userIndex == 3
                                     ? registeredWidget(() {
                                         showCircleProgressDialog(context);
@@ -283,6 +314,11 @@ class DashboardProvider extends ChangeNotifier {
                                             .then((value) {
                                           Get.back();
                                           userVidhan = value.docs[0]['vidhan'];
+                                          currentUserId = value.docs[0]['id'];
+                                          currentUserDistrictId =
+                                              value.docs[0]['districtId'];
+                                          userWhstpCounter = int.parse(
+                                              value.docs[0]['whstpCounter']);
                                           userIndex = 4;
                                           state(() {});
                                         });
@@ -304,10 +340,11 @@ class DashboardProvider extends ChangeNotifier {
                                             } else {
                                               phoneValidation = false;
                                             }
-                                            if (jilaController.text.isEmpty) {
-                                              jilaValidation = true;
+                                            if (districtController
+                                                .text.isEmpty) {
+                                              districtValidation = true;
                                             } else {
-                                              jilaValidation = false;
+                                              districtValidation = false;
                                             }
                                             if (vidhanController.text.isEmpty) {
                                               vidhanValidation = true;
@@ -326,7 +363,7 @@ class DashboardProvider extends ChangeNotifier {
                                             }
                                             if (!nameValidation &&
                                                 !phoneValidation &&
-                                                !jilaValidation &&
+                                                !districtValidation &&
                                                 !vidhanValidation &&
                                                 !ageValidation &&
                                                 !gendorValidation) {
@@ -348,14 +385,20 @@ class DashboardProvider extends ChangeNotifier {
                                                     'name': nameController.text,
                                                     'number':
                                                         phoneController.text,
-                                                    'jila': jilaController.text,
+                                                    'district':
+                                                        districtController.text,
                                                     'vidhan':
                                                         vidhanController.text,
                                                     'age': ageController.text,
                                                     'gendor':
                                                         gendorController.text,
                                                     'id': doc.id,
-                                                    'isVerified': false
+                                                    'isVerified': false,
+                                                    'volunteerStatus': false,
+                                                    'whstpJoinStatus': false,
+                                                    'whstpCounter': '0',
+                                                    'districtId':
+                                                        currentUserDistrictId
                                                   }).then((value) {
                                                     login(context, (verificationId,
                                                         resendingToken) async {
@@ -455,8 +498,9 @@ class DashboardProvider extends ChangeNotifier {
                                                         'number':
                                                             phoneController
                                                                 .text,
-                                                        'jila':
-                                                            jilaController.text,
+                                                        'district':
+                                                            districtController
+                                                                .text,
                                                         'vidhan':
                                                             vidhanController
                                                                 .text,
@@ -466,7 +510,14 @@ class DashboardProvider extends ChangeNotifier {
                                                             gendorController
                                                                 .text,
                                                         'id': id,
-                                                        'isVerified': true
+                                                        'isVerified': true,
+                                                        'volunteerStatus':
+                                                            false,
+                                                        'whstpJoinStatus':
+                                                            false,
+                                                        'whstpCounter': '0',
+                                                        'districtId':
+                                                            currentUserDistrictId
                                                       }).then((value) {
                                                         userIndex = 1;
                                                         state(() {});
@@ -545,12 +596,12 @@ class DashboardProvider extends ChangeNotifier {
           CustomTextfield(
             hintText: 'ज़िला का नाम*',
             onTap: () {
-              jilaAlertDialog(context, 'jila', isMobile);
+              districtAlertDialog(context, 'district', isMobile);
             },
-            controller: jilaController,
+            controller: districtController,
             isReadOnly: true,
             inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-            isValidation: jilaValidation,
+            isValidation: districtValidation,
           ),
           const SizedBox(
             height: 15,
@@ -559,7 +610,7 @@ class DashboardProvider extends ChangeNotifier {
             onTap: () {
               isVidhanRead
                   ? null
-                  : jilaAlertDialog(context, 'vidhan', isMobile);
+                  : districtAlertDialog(context, 'vidhan', isMobile);
             },
             hintText: 'विधानसभा *',
             isReadOnly: isVidhanRead,
@@ -633,13 +684,13 @@ class DashboardProvider extends ChangeNotifier {
     );
   }
 
-  spreadWidget(Function() onTap) {
+  spreadWidget(Function() onTap1, Function() onTap2) {
     return Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: [
             Text(
-              '$userVidhan विधानसभा के मैं सेनापति राजस्थान की टीम से जुड़ने के लिए नीचे दिए बटन पर क्लिक करें',
+              '$userVidhan विधानसभा के “मैं सेनापति राजस्थान” की टीम से जुड़ने के लिए नीचे दिए बटन पर क्लिक करें',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 decoration: TextDecoration.none,
@@ -655,7 +706,15 @@ class DashboardProvider extends ChangeNotifier {
                 title: 'व्हाट्सएप ग्रुप में जुड़ें',
                 height: 45,
                 width: double.infinity,
-                onTap: onTap)
+                onTap: onTap1),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomBtn(
+                title: '“मैं सेनापति राजस्थान” बनना चाहता हूँ',
+                height: 45,
+                width: double.infinity,
+                onTap: onTap2),
           ],
         ));
   }
@@ -706,7 +765,7 @@ class DashboardProvider extends ChangeNotifier {
             height: 20,
           ),
           CustomBtn(
-            title: 'मैं सेनापति राजस्थान बनना चाहता हूँ',
+            title: '“मैं सेनापति राजस्थान” बनना चाहता हूँ',
             height: 50,
             width: MediaQuery.of(context).size.width * .7,
             onTap: onTap2,
@@ -716,328 +775,454 @@ class DashboardProvider extends ChangeNotifier {
     );
   }
 
-  joinAsVolunteerWidget(Function() onTap) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20),
-      child: StatefulBuilder(builder: (context, state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomTextfield(
-              onTap: () {},
-              hintText: 'शैक्षणिक योग्यता *',
-              controller: secondForm1Controller,
-              inputFormatters: [
-                FilteringTextInputFormatter.deny(RegExp(r'\s'))
-              ],
-              isValidation: volunteer1Validation,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            CustomTextfield(
-              onTap: () {},
-              hintText: 'व्यवसाय *',
-              controller: secondForm2Controller,
-              inputFormatters: [
-                FilteringTextInputFormatter.deny(RegExp(r'\s'))
-              ],
-              isValidation: volunteer2Validation,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'आपके पास कौन सा वाहन है?',
-              style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  decoration: TextDecoration.none),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
+  joinAsVolunteerWidget(
+    isMobile,
+    state1,
+  ) {
+    return StatefulBuilder(builder: (context, state) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20),
+        child: StatefulBuilder(builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextfield(
+                onTap: () {
+                  isReadEducation
+                      ? educationDialogBox(context, isMobile, state1)
+                      : null;
+                },
+                isReadOnly: isReadEducation,
+                hintText: 'शैक्षणिक योग्यता *',
+                controller: educationController,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                ],
+                isValidation: volunteer1Validation,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              MouseRegion(
+                cursor: SystemMouseCursors.grab,
+                child: CustomTextfield(
                   onTap: () {
-                    volunteer1SelectedValue = 'दोपहिया';
-                    notifyListeners();
-                    state(() {});
+                    businessDialogBox(context, isMobile, state1);
                   },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(volunteer1SelectedValue, 'दोपहिया',
-                          volunteer3Validation),
-                      const SizedBox(
-                        width: 8,
+                  hintText: 'व्यवसाय *',
+                  isReadOnly: isReadBusiness,
+                  controller: businessController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                  ],
+                  isValidation: volunteer2Validation,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                'आपके पास कौन सा वाहन है?',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer1SelectedValue = 'दोपहिया';
+                      notifyListeners();
+                      state(() {});
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer1SelectedValue, 'दोपहिया',
+                              volunteer3Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'दोपहिया',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
                       ),
-                      const Text(
-                        'दोपहिया',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer1SelectedValue = 'चारपहिया';
+                      state(() {});
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer1SelectedValue, 'चारपहिया',
+                              volunteer3Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'चारपहिया',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                'क्या आप वर्तमान सरकार की योजनाओं से संतुष्ट हैं?',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer2SelectedValue = 'हां';
+                      state(() {});
+                      notifyListeners();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer2SelectedValue, 'हां',
+                              volunteer4Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'हां',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer2SelectedValue = 'ना';
+                      state(() {});
+                      notifyListeners();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer2SelectedValue, 'ना',
+                              volunteer4Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'ना',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                'क्या आप कांग्रेस के विधायक प्रत्याशी के कंधे से कंधा मिलाकर अपने बूथ को मजबूत करने को तैयार हैं?',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      volunteer3SelectedValue = 'हां';
+                      state(() {});
+                      notifyListeners();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer3SelectedValue, 'हां',
+                              volunteer5Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'हां',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer3SelectedValue = 'ना';
+                      state(() {});
+                      notifyListeners();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer3SelectedValue, 'ना',
+                              volunteer5Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'ना',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                'क्या आप आने वाले चुनाव में मिली ज़िम्मेदारी को बेहतर भविष्य के लिए निष्ठापूर्वक निभाने हेतु तैयार हैं?',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer4SelectedValue = 'हां';
+                      state(() {});
+                      notifyListeners();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer4SelectedValue, 'हां',
+                              volunteer6Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'हां',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      volunteer4SelectedValue = 'ना';
+                      state(() {});
+                      notifyListeners();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Row(
+                        children: [
+                          stringRadioBtn(volunteer4SelectedValue, 'ना',
+                              volunteer6Validation),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text(
+                            'ना',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                decoration: TextDecoration.none),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              CustomBtn(
+                  title: 'आवेदन करें',
+                  height: 45,
+                  width: double.infinity,
                   onTap: () {
-                    volunteer1SelectedValue = 'चारपहिया';
-                    state(() {});
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(volunteer1SelectedValue, 'चारपहिया',
-                          volunteer3Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'चारपहिया',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'क्या आप वर्तमान सरकार की योजनाओं से संतुष्ट हैं?',
-              style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  decoration: TextDecoration.none),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    volunteer2SelectedValue = 'हां';
-                    state(() {});
-                    notifyListeners();
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(
-                          volunteer2SelectedValue, 'हां', volunteer4Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'हां',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    volunteer2SelectedValue = 'ना';
-                    state(() {});
-                    notifyListeners();
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(
-                          volunteer2SelectedValue, 'ना', volunteer4Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'ना',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'क्या आप कांग्रेस के विधायक प्रत्याशी के कंधे से कंधा मिलाकर अपने बूथ को मजबूत करने को तैयार हैं?',
-              style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  decoration: TextDecoration.none),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    volunteer3SelectedValue = 'हां';
-                    state(() {});
-                    notifyListeners();
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(
-                          volunteer3SelectedValue, 'हां', volunteer5Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'हां',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    volunteer3SelectedValue = 'ना';
-                    state(() {});
-                    notifyListeners();
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(
-                          volunteer3SelectedValue, 'ना', volunteer5Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'ना',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'क्या आप आने वाले चुनाव में मिली ज़िम्मेदारी को बेहतर भविष्य के लिए निष्ठापूर्वक निभाने हेतु तैयार हैं?',
-              style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  decoration: TextDecoration.none),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    volunteer4SelectedValue = 'हां';
-                    state(() {});
-                    notifyListeners();
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(
-                          volunteer4SelectedValue, 'हां', volunteer6Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'हां',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    volunteer4SelectedValue = 'ना';
-                    state(() {});
-                    notifyListeners();
-                  },
-                  child: Row(
-                    children: [
-                      stringRadioBtn(
-                          volunteer4SelectedValue, 'ना', volunteer6Validation),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        'ना',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            decoration: TextDecoration.none),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            CustomBtn(
-                title: 'आवेदन करें',
-                height: 45,
-                width: double.infinity,
-                onTap: onTap)
-          ],
-        );
-      }),
-    );
+                    if (educationController.text.isEmpty) {
+                      volunteer1Validation = true;
+                      state1(() {});
+                      notifyListeners();
+                    } else {
+                      volunteer1Validation = false;
+                      state1(() {});
+                      notifyListeners();
+                    }
+                    if (businessController.text.isEmpty) {
+                      volunteer2Validation = true;
+                      state1(() {});
+                      notifyListeners();
+                    } else {
+                      volunteer2Validation = false;
+                      state1(() {});
+                      notifyListeners();
+                    }
+                    if (volunteer1SelectedValue.isEmpty) {
+                      volunteer3Validation = true;
+                      state1(() {});
+                    } else {
+                      volunteer3Validation = false;
+                      state1(() {});
+                    }
+                    if (volunteer2SelectedValue.isEmpty) {
+                      volunteer4Validation = true;
+                      state1(() {});
+                    } else {
+                      volunteer4Validation = false;
+                      state1(() {});
+                    }
+                    if (volunteer3SelectedValue.isEmpty) {
+                      volunteer5Validation = true;
+                      state1(() {});
+                    } else {
+                      volunteer5Validation = false;
+                      state1(() {});
+                    }
+                    if (volunteer4SelectedValue.isEmpty) {
+                      volunteer6Validation = true;
+                      state1(() {});
+                    } else {
+                      volunteer6Validation = false;
+                      state1(() {});
+                    }
+                    if (!volunteer1Validation &&
+                        !volunteer2Validation &&
+                        !volunteer3Validation &&
+                        !volunteer4Validation &&
+                        !volunteer5Validation &&
+                        !volunteer6Validation) {
+                      showCircleProgressDialog(context);
+                      usersRef
+                          .where('number', isEqualTo: phoneController.text)
+                          .get()
+                          .then((value) {
+                        usersRef
+                            .doc(value.docs[0]['id'])
+                            .update({'volunteerStatus': true});
+                        final id = usersRef
+                            .doc(value.docs[0]['id'])
+                            .collection('volunteer')
+                            .doc()
+                            .id;
+                        usersRef
+                            .doc(value.docs[0]['id'])
+                            .collection('volunteer')
+                            .doc(id)
+                            .set({
+                          'volntr1': educationController.text,
+                          'volntr2': businessController.text,
+                          'volntr3': volunteer1SelectedValue,
+                          'volntr4': volunteer2SelectedValue,
+                          'volntr5': volunteer3SelectedValue,
+                          'volntr6': volunteer4SelectedValue,
+                          'volntrId': id
+                        }).then((value) {
+                          userIndex = 6;
+                          Get.back();
+                          state(() {});
+                          state1(() {});
+                        });
+                      });
+                    }
+                  })
+            ],
+          );
+        }),
+      );
+    });
   }
 
   successfullyRegisteredVolunteer() {
@@ -1046,7 +1231,7 @@ class DashboardProvider extends ChangeNotifier {
       child: Column(
         children: [
           const Text(
-            'एक बेहतर राजनीति की ओर आपका लिया गया ये कदम सराहनीय है। मैं सेनापति राजस्थान टीम आपसे जल्द हीं संपर्क करेगी।',
+            'एक बेहतर राजनीति की ओर आपका लिया गया ये कदम सराहनीय है। “मैं सेनापति राजस्थान” टीम आपसे जल्द हीं संपर्क करेगी।',
             textAlign: TextAlign.center,
             style: TextStyle(
               decoration: TextDecoration.none,
@@ -1070,7 +1255,7 @@ class DashboardProvider extends ChangeNotifier {
     );
   }
 
-  jilaAlertDialog(
+  districtAlertDialog(
     BuildContext context,
     String route,
     isMobile,
@@ -1104,7 +1289,7 @@ class DashboardProvider extends ChangeNotifier {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            route == 'jila'
+                            route == 'district'
                                 ? 'ज़िला का नाम *'
                                 : 'विधानसभा का नाम *',
                             style: const TextStyle(
@@ -1125,17 +1310,19 @@ class DashboardProvider extends ChangeNotifier {
                           },
                           physics: const ScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: route == 'jila'
+                          itemCount: route == 'district'
                               ? districtList.length
                               : districtList[selectedIndex]['vidhan'].length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               behavior: HitTestBehavior.opaque,
                               onTap: () {
-                                if (route == 'jila') {
-                                  selectedJila = index;
-                                  jilaController.text =
+                                if (route == 'district') {
+                                  selectedDistrict = index;
+                                  districtController.text =
                                       districtList[index]['name'];
+                                  currentUserDistrictId =
+                                      districtList[index]['id'];
                                   selectedIndex = index;
                                   isVidhanRead = false;
                                   vidhanController.clear();
@@ -1148,24 +1335,27 @@ class DashboardProvider extends ChangeNotifier {
                                 }
                                 Get.back();
                               },
-                              child: Container(
-                                height: 30,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      route == 'jila'
-                                          ? districtList[index]['name']
-                                          : districtList[selectedIndex]
-                                              ['vidhan'][index],
-                                      style: const TextStyle(fontSize: 17),
-                                    ),
-                                    const Spacer(),
-                                    radioBtn(
-                                        index,
-                                        route == 'jila'
-                                            ? selectedJila
-                                            : selectedVidhan)
-                                  ],
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: Container(
+                                  height: 30,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        route == 'district'
+                                            ? districtList[index]['name']
+                                            : districtList[selectedIndex]
+                                                ['vidhan'][index],
+                                        style: const TextStyle(fontSize: 17),
+                                      ),
+                                      const Spacer(),
+                                      radioBtn(
+                                          index,
+                                          route == 'district'
+                                              ? selectedDistrict
+                                              : selectedVidhan)
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -1176,6 +1366,206 @@ class DashboardProvider extends ChangeNotifier {
               ),
             ),
           );
+        });
+  }
+
+  educationDialogBox(BuildContext context, isMobile, state1) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, state) {
+            return AlertDialog(
+              contentPadding: const EdgeInsets.all(0),
+              insetPadding: EdgeInsets.zero,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height - 50,
+                    minHeight: 300,
+                    maxWidth:
+                        isMobile ? MediaQuery.of(context).size.width - 50 : 300,
+                    minWidth: isMobile
+                        ? MediaQuery.of(context).size.width - 50
+                        : 300),
+                child: SingleChildScrollView(
+                  physics: const ScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Flexible(
+                              child: Text(
+                                'कृपया अपना शैक्षणिक योग्यता भरे *',
+                                style:
+                                    TextStyle(fontSize: 15, color: Colors.grey),
+                              ),
+                            ),
+                            unselectedRadioBtn()
+                            // radioBtn()
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ListView.separated(
+                            separatorBuilder: (context, sp) {
+                              return const SizedBox(
+                                height: 10,
+                              );
+                            },
+                            physics: const ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: educationList.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  educationController.text =
+                                      index == 9 ? '' : educationList[index];
+                                  selectedEducation = index;
+                                  isReadEducation = index == 9 ? false : true;
+                                  state(() {});
+                                  state1(() {});
+                                  Get.back();
+                                },
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: Container(
+                                    // height: 30,
+                                    padding: const EdgeInsets.only(
+                                        top: 4, bottom: 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            educationList[index],
+                                            style:
+                                                const TextStyle(fontSize: 17),
+                                          ),
+                                        ),
+                                        radioBtn(index, selectedEducation)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  businessDialogBox(BuildContext context, isMobile, state1) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, state) {
+            return AlertDialog(
+              contentPadding: const EdgeInsets.all(0),
+              insetPadding: EdgeInsets.zero,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height - 50,
+                    minHeight: 300,
+                    maxWidth:
+                        isMobile ? MediaQuery.of(context).size.width - 50 : 300,
+                    minWidth: isMobile
+                        ? MediaQuery.of(context).size.width - 50
+                        : 300),
+                child: SingleChildScrollView(
+                  physics: const ScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Flexible(
+                              child: Text(
+                                'कृपया अपना व्यवसाय भरे *',
+                                style:
+                                    TextStyle(fontSize: 15, color: Colors.grey),
+                              ),
+                            ),
+                            unselectedRadioBtn()
+                            // radioBtn()
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ListView.separated(
+                            separatorBuilder: (context, sp) {
+                              return const SizedBox(
+                                height: 10,
+                              );
+                            },
+                            physics: const ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: businessList.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  businessController.text =
+                                      index == 20 ? '' : businessList[index];
+                                  selectedBusiness = index;
+                                  isReadBusiness = index == 20 ? false : true;
+                                  state(() {});
+                                  state1(() {});
+                                  Get.back();
+                                },
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                        top: 4, bottom: 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            businessList[index],
+                                            style:
+                                                const TextStyle(fontSize: 17),
+                                          ),
+                                        ),
+                                        // const Spacer(),
+                                        radioBtn(index, selectedBusiness)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
         });
   }
 
@@ -1239,17 +1629,20 @@ class DashboardProvider extends ChangeNotifier {
                                 selectedGendor = index;
                                 Get.back();
                               },
-                              child: Container(
-                                height: 30,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      gendorList[index],
-                                      style: const TextStyle(fontSize: 17),
-                                    ),
-                                    const Spacer(),
-                                    radioBtn(index, selectedGendor)
-                                  ],
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: Container(
+                                  height: 30,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        gendorList[index],
+                                        style: const TextStyle(fontSize: 17),
+                                      ),
+                                      const Spacer(),
+                                      radioBtn(index, selectedGendor)
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -1323,5 +1716,13 @@ class DashboardProvider extends ChangeNotifier {
           decoration:
               const BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
         ));
+  }
+
+  urlLauncher(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
