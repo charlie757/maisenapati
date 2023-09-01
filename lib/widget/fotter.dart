@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
-import 'package:sarkar/disclimar.dart';
-import 'package:sarkar/privacypolicy.dart';
-import 'package:sarkar/utils/routes.dart';
+import 'package:mainsenapatirajasthan/utils/routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Widget fotterWidget(BuildContext context) {
   bool isMobile = ResponsiveBreakpoints.of(context).isMobile;
@@ -68,19 +68,27 @@ Widget mobileTabletDesign(BuildContext context) {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            socialContainer('assets/icons/facebook.png'),
+            socialContainer('assets/lottie/lottie4.json', () {
+              urlLauncher('https://www.facebook.com/MainSenapatiRajasthan/');
+            }),
             const SizedBox(
               width: 10,
             ),
-            socialContainer('assets/icons/twitter.png'),
+            socialContainer('assets/lottie/lottie5.json', () {
+              urlLauncher('https://twitter.com/mainsenapatiraj');
+            }),
             const SizedBox(
               width: 10,
             ),
-            socialContainer('assets/icons/youtube.png'),
-            const SizedBox(
-              width: 10,
-            ),
-            socialContainer('assets/icons/instagram.png'),
+            // socialContainer('assets/lottie/lottie7.json', () {
+            //   urlLauncher('https://www.threads.net/@mainsenapatirajasthan');
+            // }),
+            // const SizedBox(
+            //   width: 10,
+            // ),
+            socialContainer('assets/lottie/lottie6.json', () {
+              urlLauncher('https://www.instagram.com/mainsenapatirajasthan/');
+            }),
           ],
         ),
         const SizedBox(
@@ -139,19 +147,27 @@ Widget webDesign(BuildContext context) {
           ),
         ),
         const Spacer(),
-        socialContainer('assets/icons/facebook.png'),
+        socialContainer('assets/lottie/lottie4.json', () {
+          urlLauncher('https://www.facebook.com/MainSenapatiRajasthan/');
+        }),
         const SizedBox(
           width: 15,
         ),
-        socialContainer('assets/icons/twitter.png'),
+        socialContainer('assets/lottie/lottie5.json', () {
+          urlLauncher('https://twitter.com/mainsenapatiraj');
+        }),
+        // const SizedBox(
+        //   width: 15,
+        // ),
+        // socialContainer('assets/lottie/lottie7.json', () {
+        //   urlLauncher('https://www.threads.net/@mainsenapatirajasthan');
+        // }),
         const SizedBox(
           width: 15,
         ),
-        socialContainer('assets/icons/youtube.png'),
-        const SizedBox(
-          width: 15,
-        ),
-        socialContainer('assets/icons/instagram.png'),
+        socialContainer('assets/lottie/lottie6.json', () {
+          urlLauncher('https://www.instagram.com/mainsenapatirajasthan/');
+        }),
         const Spacer(),
         const Text(
           'Copyright © 2023 - All Rights Reserved.',
@@ -162,20 +178,36 @@ Widget webDesign(BuildContext context) {
   );
 }
 
-Widget socialContainer(String img) {
-  return Container(
-    height: 45,
-    width: 45,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(17),
-        color: const Color(0xff2596be)),
-    // padding: EdgeInsets.all(10),
-    child: Image.asset(
-      img,
-      height: 25,
-      width: 25,
-      fit: BoxFit.cover,
+Widget socialContainer(String img, Function() onTap) {
+  return MouseRegion(
+    cursor: SystemMouseCursors.click,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        height: 45,
+        width: 45,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(17),
+          // color: const Color(0xff2596be)
+        ),
+        // padding: EdgeInsets.all(10),
+        child: Lottie.asset(
+          img,
+          // height: 25,
+          // width: 25,
+          fit: BoxFit.cover,
+        ),
+      ),
     ),
   );
+}
+
+urlLauncher(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
 }

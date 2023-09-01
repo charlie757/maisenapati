@@ -3,14 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mainsenapatirajasthan/splashscreen.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:sarkar/dashboard.dart';
-import 'package:sarkar/disclimar.dart';
-import 'package:sarkar/privacypolicy.dart';
-import 'package:sarkar/providers/dashboardprovider.dart';
-import 'package:sarkar/utils/routes.dart';
+import 'package:mainsenapatirajasthan/dashboard.dart';
+import 'package:mainsenapatirajasthan/disclaimer.dart';
+import 'package:mainsenapatirajasthan/privacypolicy.dart';
+import 'package:mainsenapatirajasthan/providers/dashboardprovider.dart';
+import 'package:mainsenapatirajasthan/utils/routes.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
@@ -20,10 +20,10 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
-      apiKey: "AIzaSyB28s2HqhlF_oELdTVKc-p4Xlmkv_iREZ0",
-      projectId: "senapati-d469d",
-      messagingSenderId: "645048266432",
-      appId: "1:645048266432:web:bd67a1ce74c73abcf34725",
+      apiKey: "AIzaSyD5Nk_h8zcURXw_J62niBdh7weiNx1CdFE",
+      projectId: "mainsenapatirajasthan",
+      messagingSenderId: "652413472184",
+      appId: "1:652413472184:web:7aa24e3c8c271b9f4a534d",
     ));
   } else {
     Firebase.initializeApp();
@@ -59,7 +59,34 @@ class MyApp extends StatelessWidget {
           ],
         ),
         debugShowCheckedModeBanner: false,
+        onGenerateRoute: (settings) {
+          if (settings.name == '/home') {
+            return MaterialPageRoute(builder: (_) => Dashboard());
+          }
+          // if (settings.name == '/adminLogin') {
+          //   return MaterialPageRoute(builder: (_) => AdminLogin());
+          // }
+          // if (settings.name == '/adminDashboard') {
+          //   return MaterialPageRoute(builder: (_) => AdminDashboard());
+          // }
+          // if (settings.name == '/ViewData') {
+          //   return MaterialPageRoute(builder: (_) => ViewData());
+          // }
+        },
+        // initialRoute: '/splash',
         getPages: [
+          GetPage(
+              name: Routes.dashboard,
+              page: () => const Dashboard(),
+              transition: Transition.fade,
+              transitionDuration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut),
+          // GetPage(
+          //     name: Routes.adminLogin,
+          //     page: () => const AdminLogin(),
+          //     transition: Transition.fade,
+          //     transitionDuration: const Duration(milliseconds: 100),
+          //     curve: Curves.easeInOut),
           GetPage(
               name: Routes.privacy,
               page: () => const PrivacyPolicy(),
@@ -72,12 +99,24 @@ class MyApp extends StatelessWidget {
               transition: Transition.fade,
               transitionDuration: const Duration(milliseconds: 100),
               curve: Curves.easeInOut),
+          // GetPage(
+          //     name: Routes.adminDashboard,
+          //     page: () => const AdminDashboard(),
+          //     transition: Transition.fade,
+          //     transitionDuration: const Duration(milliseconds: 100),
+          //     curve: Curves.easeInOut),
+          // GetPage(
+          //     name: Routes.viewdata,
+          //     page: () => const ViewData(),
+          //     transition: Transition.fade,
+          //     transitionDuration: const Duration(milliseconds: 100),
+          //     curve: Curves.easeInOut),
         ],
         title: 'मैं सेनापति राजस्थान',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: Dashboard(),
+        home: const SplashScreen(),
       ),
     );
   }

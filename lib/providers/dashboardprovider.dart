@@ -1,12 +1,14 @@
+import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:sarkar/helper.dart/custombtn.dart';
-import 'package:sarkar/helper.dart/customtextfield.dart';
-import 'package:sarkar/utils/collectionreference.dart';
-import 'package:sarkar/utils/showcircleprogressdialog.dart';
+import 'package:mainsenapatirajasthan/utils/collectionreference.dart';
+import 'package:mainsenapatirajasthan/utils/showcircleprogressdialog.dart';
+import 'package:mainsenapatirajasthan/helper.dart/custombtn.dart';
+import 'package:mainsenapatirajasthan/helper.dart/customtextfield.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardProvider extends ChangeNotifier {
@@ -53,9 +55,10 @@ class DashboardProvider extends ChangeNotifier {
   String volunteer3SelectedValue = '';
   String volunteer4SelectedValue = '';
 
+  List districtList = [];
+  List vidhanList = [];
   List gendorList = ['पुरुष', 'महिला', 'अन्य'];
   int selectedGendor = -1;
-  List districtList = [];
   int selectedDistrict = -1;
   int selectedVidhan = -1;
   int selectedIndex = 0;
@@ -107,14 +110,23 @@ class DashboardProvider extends ChangeNotifier {
   String currentUserDistrictId = '';
   int userWhstpCounter = 0;
   String currentUserId = '';
+  bool currentVolunteerStatus = false;
   fetchDistrctData() async {
     districtList.clear();
-    districtRef.get().then((value) {
+    districtRef.orderBy('districtCode', descending: false).get().then((value) {
       districtList = value.docs;
     });
   }
 
-  login(BuildContext context, PhoneCodeSent codeSent) async {
+  fetchVidhanData(disCode) async {
+    vidhanList.clear();
+    vidhanRef.where('districtCode', isEqualTo: disCode).get().then((value) {
+      vidhanList = value.docs;
+      notifyListeners();
+    });
+  }
+
+  login(BuildContext context, isMobile, PhoneCodeSent codeSent) async {
     await _auth.verifyPhoneNumber(
       phoneNumber: '+91 ${phoneController.text}',
       timeout: Duration(seconds: timer),
@@ -125,12 +137,7 @@ class DashboardProvider extends ChangeNotifier {
         print(phoneController.text);
         Get.back();
         print(verificationFailed.phoneNumber);
-        ScaffoldMessenger.of(context).showSnackBar((const SnackBar(
-            // width: 200,
-            content: Text(
-          "Please check your number",
-          style: TextStyle(fontSize: 16),
-        ))));
+        showErrorDialog(context, isMobile, 'अपना नंबर चेक करें');
         // showDialogBox = false;
         // notifyListeners();
       },
@@ -170,7 +177,7 @@ class DashboardProvider extends ChangeNotifier {
       barrierLabel: "Label",
       barrierDismissible: true,
       barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: const Duration(milliseconds: 700),
+      transitionDuration: const Duration(milliseconds: 400),
       context: context,
       pageBuilder: (context, anim1, anim2) {
         return StatefulBuilder(builder: (context, state) {
@@ -230,319 +237,25 @@ class DashboardProvider extends ChangeNotifier {
                       height: 20,
                     ),
                     userIndex == 6
-                        ? successfullyRegisteredVolunteer()
+                        ? successfullyRegisteredVolunteer(context, isMobile)
                         : userIndex == 5
                             ? joinAsVolunteerWidget(
                                 isMobile,
                                 state,
                               )
                             : userIndex == 4
-                                ? spreadWidget(() {
-                                    districtRef
-                                        .doc(currentUserDistrictId
-                                            .toString()
-                                            .removeAllWhitespace)
-                                        .collection('vidhansabha')
-                                        .where('nameHindi',
-                                            isEqualTo: userVidhan)
-                                        .get()
-                                        .then((value) {
-                                      districtRef
-                                          .doc(currentUserDistrictId
-                                              .toString()
-                                              .removeAllWhitespace)
-                                          .collection('vidhansabha')
-                                          .doc(value.docs[0]['id'])
-                                          .collection('whatsappgrp')
-                                          .where('isAdd', isEqualTo: true)
-                                          .orderBy('createdAt',
-                                              descending: false)
-                                          .get()
-                                          .then((wvalue) {
-                                        print("wvalue...$wvalue");
-                                        // set the counter for user in usercollection
-                                        // if(userWhstpCounter)
-                                        // usersRef
-                                        //     .doc(currentUserDistrictId
-                                        //         .toString()
-                                        //         .removeAllWhitespace)
-                                        //     .update({
-                                        //   'whstpJoinStatus': true,
-                                        //   // 'whstpCounter':
-                                        //   //     (userWhstpCounter + 1).toString()
-                                        // }).then((uservalue) {
-                                        // set the counter on whatsapp grp
-                                        districtRef
-                                            .doc(currentUserDistrictId
-                                                .toString()
-                                                .removeAllWhitespace)
-                                            .collection('vidhansabha')
-                                            .doc(value.docs[0]['id'])
-                                            .collection('whatsappgrp')
-                                            .doc(wvalue.docs[0]['id'])
-                                            .update({
-                                          'counter': (int.parse(wvalue.docs[0]
-                                                      ['counter']) +
-                                                  1)
-                                              .toString(),
-                                          'isAdd': (int.parse(wvalue.docs[0]
-                                                          ['counter']) <
-                                                      1008 &&
-                                                  int.parse(wvalue.docs[0]
-                                                          ['counter']) ==
-                                                      1009)
-                                              ? false
-                                              : true
-                                        }).then((disValue) {
-                                          urlLauncher(
-                                              wvalue.docs[0]['grplink']);
-                                        });
-                                      });
-                                      // });
-                                    });
-                                  }, () {
-                                    userIndex = 5;
-                                    state(() {});
-                                  })
+                                ? spreadWidget(state, context, isMobile)
                                 : userIndex == 3
-                                    ? registeredWidget(() {
-                                        showCircleProgressDialog(context);
-                                        usersRef
-                                            .where('number',
-                                                isEqualTo: phoneController.text)
-                                            .get()
-                                            .then((value) {
-                                          Get.back();
-                                          userVidhan = value.docs[0]['vidhan'];
-                                          currentUserId = value.docs[0]['id'];
-                                          currentUserDistrictId =
-                                              value.docs[0]['districtId'];
-                                          userWhstpCounter = int.parse(
-                                              value.docs[0]['whstpCounter']);
-                                          userIndex = 4;
-                                          state(() {});
-                                        });
-                                        notifyListeners();
-                                      })
+                                    ? registeredWidget(state)
                                     : userIndex == 0
                                         ? userFieldDetailsWidget(
-                                            context, isMobile, () async {
-                                            state(() {});
-                                            if (nameController.text.isEmpty) {
-                                              nameValidation = true;
-                                            } else {
-                                              nameValidation = false;
-                                            }
-                                            if (phoneController.text.isEmpty ||
-                                                phoneController.text.length <
-                                                    10) {
-                                              phoneValidation = true;
-                                            } else {
-                                              phoneValidation = false;
-                                            }
-                                            if (districtController
-                                                .text.isEmpty) {
-                                              districtValidation = true;
-                                            } else {
-                                              districtValidation = false;
-                                            }
-                                            if (vidhanController.text.isEmpty) {
-                                              vidhanValidation = true;
-                                            } else {
-                                              vidhanValidation = false;
-                                            }
-                                            if (ageController.text.isEmpty) {
-                                              ageValidation = true;
-                                            } else {
-                                              ageValidation = false;
-                                            }
-                                            if (gendorController.text.isEmpty) {
-                                              gendorValidation = true;
-                                            } else {
-                                              gendorValidation = false;
-                                            }
-                                            if (!nameValidation &&
-                                                !phoneValidation &&
-                                                !districtValidation &&
-                                                !vidhanValidation &&
-                                                !ageValidation &&
-                                                !gendorValidation) {
-                                              showCircleProgressDialog(context);
-                                              usersRef
-                                                  .where('number',
-                                                      isEqualTo:
-                                                          phoneController.text)
-                                                  .get()
-                                                  .then((user) async {
-                                                if (user.docs.isEmpty) {
-                                                  DocumentReference<Object?>
-                                                      doc = usersRef.doc();
-                                                  id = doc.id;
-                                                  notifyListeners();
-                                                  await usersRef
-                                                      .doc(doc.id)
-                                                      .set({
-                                                    'name': nameController.text,
-                                                    'number':
-                                                        phoneController.text,
-                                                    'district':
-                                                        districtController.text,
-                                                    'vidhan':
-                                                        vidhanController.text,
-                                                    'age': ageController.text,
-                                                    'gendor':
-                                                        gendorController.text,
-                                                    'id': doc.id,
-                                                    'isVerified': false,
-                                                    'volunteerStatus': false,
-                                                    'whstpJoinStatus': false,
-                                                    'whstpCounter': '0',
-                                                    'districtId':
-                                                        currentUserDistrictId
-                                                  }).then((value) {
-                                                    login(context, (verificationId,
-                                                        resendingToken) async {
-                                                      userIndex = 2;
-                                                      notifyListeners();
-                                                      this.verificationId =
-                                                          verificationId;
-                                                      print(
-                                                          this.verificationId);
-                                                      state(() {});
-                                                      Get.back();
-                                                    });
-                                                    state(() {});
-                                                    notifyListeners();
-                                                    // Get.back();
-                                                  });
-                                                } else {
-                                                  id = user.docs[0]['id'];
-                                                  if (user.docs[0]
-                                                      ['isVerified']) {
-                                                    userIndex = 3;
-                                                    state(() {});
-                                                    Get.back();
-                                                  } else {
-                                                    login(context, (verificationId,
-                                                        resendingToken) async {
-                                                      userIndex = 2;
-                                                      state(() {});
-                                                      notifyListeners();
-                                                      this.verificationId =
-                                                          verificationId;
-                                                      print(
-                                                          this.verificationId);
-                                                      Get.back();
-                                                    });
-                                                    state(() {});
-                                                  }
-                                                }
-                                              });
-                                            }
-                                          })
+                                            context, isMobile, state)
                                         : userIndex == 1
-                                            ? chooseBtnToJoin(context, () {
-                                                showCircleProgressDialog(
-                                                    context);
-                                                usersRef
-                                                    .where('number',
-                                                        isEqualTo:
-                                                            phoneController
-                                                                .text)
-                                                    .get()
-                                                    .then((value) {
-                                                  Get.back();
-                                                  userVidhan =
-                                                      value.docs[0]['vidhan'];
-                                                  userIndex = 4;
-                                                  state(() {});
-                                                });
-                                              }, () {
-                                                userIndex = 5;
-                                                state(() {});
-                                              })
-                                            : otpWidget(context, () async {
-                                                if (otpController
-                                                        .text.isEmpty ||
-                                                    otpController.text.length <
-                                                        6) {
-                                                  otpValidation = true;
-                                                  state(() {});
-                                                  notifyListeners();
-                                                } else {
-                                                  otpValidation = false;
-                                                  notifyListeners();
-                                                  state(() {});
-                                                  PhoneAuthCredential
-                                                      phoneAuthCredential =
-                                                      PhoneAuthProvider
-                                                          .credential(
-                                                              verificationId:
-                                                                  verificationId,
-                                                              smsCode:
-                                                                  otpController
-                                                                      .text);
-                                                  try {
-                                                    showCircleProgressDialog(
-                                                        context);
-                                                    await _auth
-                                                        .signInWithCredential(
-                                                            phoneAuthCredential);
-                                                    if (phoneAuthCredential
-                                                        .providerId
-                                                        .isNotEmpty) {
-                                                      // update the user
-                                                      usersRef.doc(id).set({
-                                                        'name':
-                                                            nameController.text,
-                                                        'number':
-                                                            phoneController
-                                                                .text,
-                                                        'district':
-                                                            districtController
-                                                                .text,
-                                                        'vidhan':
-                                                            vidhanController
-                                                                .text,
-                                                        'age':
-                                                            ageController.text,
-                                                        'gendor':
-                                                            gendorController
-                                                                .text,
-                                                        'id': id,
-                                                        'isVerified': true,
-                                                        'volunteerStatus':
-                                                            false,
-                                                        'whstpJoinStatus':
-                                                            false,
-                                                        'whstpCounter': '0',
-                                                        'districtId':
-                                                            currentUserDistrictId
-                                                      }).then((value) {
-                                                        userIndex = 1;
-                                                        state(() {});
-                                                        notifyListeners();
-                                                      });
-                                                      state(() {});
-                                                    }
-                                                    Get.back();
-                                                  } on FirebaseAuthException catch (e) {
-                                                    Get.back();
-                                                    print(e.message);
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(const SnackBar(
-                                                            content: Text(
-                                                                'Please enter the correct otp number',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        16))));
-                                                    // setState(() {
-                                                    //   // showLoading = false;
-                                                    // });
-                                                  }
-                                                }
-                                              }),
+                                            ? chooseBtnToJoin(
+                                                context,
+                                                state,
+                                              )
+                                            : otpWidget(context, state),
                     const SizedBox(
                       height: 20,
                     ),
@@ -563,7 +276,7 @@ class DashboardProvider extends ChangeNotifier {
     );
   }
 
-  userFieldDetailsWidget(BuildContext context, isMobile, Function() onTap) {
+  userFieldDetailsWidget(BuildContext context, isMobile, state1) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Column(
@@ -572,7 +285,9 @@ class DashboardProvider extends ChangeNotifier {
             onTap: () {},
             hintText: 'नाम *',
             controller: nameController,
-            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'\s\s'))
+            ],
             isValidation: nameValidation,
           ),
           const SizedBox(
@@ -652,13 +367,109 @@ class DashboardProvider extends ChangeNotifier {
               title: 'प्रण ले',
               height: 45,
               width: double.infinity,
-              onTap: onTap),
+              onTap: () async {
+                state1(() {});
+                if (nameController.text.isEmpty) {
+                  nameValidation = true;
+                } else {
+                  nameValidation = false;
+                }
+                if (phoneController.text.isEmpty ||
+                    phoneController.text.length < 10) {
+                  phoneValidation = true;
+                } else {
+                  phoneValidation = false;
+                }
+                if (districtController.text.isEmpty) {
+                  districtValidation = true;
+                } else {
+                  districtValidation = false;
+                }
+                if (vidhanController.text.isEmpty) {
+                  vidhanValidation = true;
+                } else {
+                  vidhanValidation = false;
+                }
+                if (ageController.text.isEmpty) {
+                  ageValidation = true;
+                } else {
+                  ageValidation = false;
+                }
+                if (gendorController.text.isEmpty) {
+                  gendorValidation = true;
+                } else {
+                  gendorValidation = false;
+                }
+                if (!nameValidation &&
+                    !phoneValidation &&
+                    !districtValidation &&
+                    !vidhanValidation &&
+                    !ageValidation &&
+                    !gendorValidation) {
+                  showCircleProgressDialog(context);
+                  usersRef
+                      .where('number', isEqualTo: phoneController.text)
+                      .get()
+                      .then((user) async {
+                    if (user.docs.isEmpty) {
+                      DocumentReference<Object?> doc = usersRef.doc();
+                      id = doc.id;
+                      notifyListeners();
+                      await usersRef.doc(doc.id).set({
+                        'name': nameController.text,
+                        'number': phoneController.text,
+                        'district': districtController.text,
+                        'vidhan': vidhanController.text,
+                        'age': ageController.text,
+                        'gendor': gendorController.text,
+                        'id': doc.id,
+                        'isVerified': false,
+                        'volunteerStatus': false,
+                        'whstpJoinStatus': false,
+                        'whstpCounter': '0',
+                        'districtId': currentUserDistrictId,
+                        'createdAt': FieldValue.serverTimestamp()
+                      }).then((value) {
+                        login(context, isMobile,
+                            (verificationId, resendingToken) async {
+                          userIndex = 2;
+                          notifyListeners();
+                          this.verificationId = verificationId;
+                          print(this.verificationId);
+                          state1(() {});
+                          Get.back();
+                        });
+                        state1(() {});
+                        notifyListeners();
+                        // Get.back();
+                      });
+                    } else {
+                      id = user.docs[0]['id'];
+                      if (user.docs[0]['isVerified']) {
+                        userIndex = 3;
+                        state1(() {});
+                        Get.back();
+                      } else {
+                        login(context, isMobile,
+                            (verificationId, resendingToken) async {
+                          userIndex = 2;
+                          state1(() {});
+                          notifyListeners();
+                          this.verificationId = verificationId;
+                          Get.back();
+                        });
+                        state1(() {});
+                      }
+                    }
+                  });
+                }
+              }),
         ],
       ),
     );
   }
 
-  otpWidget(BuildContext context, Function() onTap) {
+  otpWidget(BuildContext context, state1) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Column(
@@ -678,13 +489,54 @@ class DashboardProvider extends ChangeNotifier {
               title: 'ओटीपी दर्ज करें',
               height: 45,
               width: double.infinity,
-              onTap: onTap)
+              onTap: () async {
+                if (otpController.text.isEmpty ||
+                    otpController.text.length < 6) {
+                  otpValidation = true;
+                  state1(() {});
+                  notifyListeners();
+                } else {
+                  otpValidation = false;
+                  notifyListeners();
+                  state1(() {});
+                  PhoneAuthCredential phoneAuthCredential =
+                      PhoneAuthProvider.credential(
+                          verificationId: verificationId,
+                          smsCode: otpController.text);
+                  try {
+                    showCircleProgressDialog(context);
+                    await _auth.signInWithCredential(phoneAuthCredential);
+                    if (phoneAuthCredential.providerId.isNotEmpty) {
+                      // update the user
+                      usersRef.doc(id).update({
+                        'isVerified': true,
+                        'updateAt': FieldValue.serverTimestamp()
+                      }).then((value) {
+                        userIndex = 1;
+                        state1(() {});
+                        notifyListeners();
+                      });
+                      state1(() {});
+                    }
+                    Get.back();
+                  } on FirebaseAuthException catch (e) {
+                    Get.back();
+                    print(e.message);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Please enter the correct otp number',
+                            style: TextStyle(fontSize: 16))));
+                    // setState(() {
+                    //   // showLoading = false;
+                    // });
+                  }
+                }
+              })
         ],
       ),
     );
   }
 
-  spreadWidget(Function() onTap1, Function() onTap2) {
+  spreadWidget(state1, BuildContext context, isMobile) {
     return Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
@@ -706,20 +558,131 @@ class DashboardProvider extends ChangeNotifier {
                 title: 'व्हाट्सएप ग्रुप में जुड़ें',
                 height: 45,
                 width: double.infinity,
-                onTap: onTap1),
+                onTap: () {
+                  showCircleProgressDialog(context);
+                  // usersRef.doc(currentUserId).get().then((userValue) {
+
+                  // });
+                  whatsappRef
+                      .where('nameHindi', isEqualTo: userVidhan)
+                      .get()
+                      .then((value) {
+                    if (value.docs.isNotEmpty) {
+                      whatsappRef
+                          .doc(value.docs[0]['id'])
+                          .collection('whatsLink')
+                          .orderBy('createdAt', descending: false)
+                          .limit(1)
+                          .get()
+                          .then((value1) {
+                        usersRef
+                            .doc(currentUserId.toString().removeAllWhitespace)
+                            .update({
+                          'whstpJoinStatus': true,
+                          'whstpCounter': (userWhstpCounter + 1).toString()
+                        }).then((value2) {
+                          userWhstpCounter = userWhstpCounter + 1;
+                          whatsappRef
+                              .doc(value.docs[0]['id'])
+                              .collection('whatsLink')
+                              .doc(value1.docs[0]['id'])
+                              .update({
+                            'counter':
+                                (int.parse(value1.docs[0]['counter']) + 1)
+                                    .toString(),
+                          }).then((value3) {
+                            Get.back();
+                            urlLauncher(value1.docs[0]['grplink']);
+                            Get.back();
+                          });
+                        });
+                      });
+                    } else {
+                      Get.back();
+                      showErrorDialog(
+                          context, isMobile, 'व्हाट्सएप ग्रुप उपलब्ध नहीं है');
+                    }
+                  });
+                  // districtRef
+                  //     .doc(currentUserDistrictId.toString().removeAllWhitespace)
+                  //     .collection('vidhansabha')
+                  //     .where('nameHindi', isEqualTo: userVidhan)
+                  //     .get()
+                  //     .then((value) {
+                  //   if (value.docs.isEmpty) {
+                  //     Get.back();
+                  //   } else {
+                  //     districtRef
+                  //         .doc(currentUserDistrictId
+                  //             .toString()
+                  //             .removeAllWhitespace)
+                  //         .collection('vidhansabha')
+                  //         .doc(value.docs[0]['id'])
+                  //         .collection('whatsappgrp')
+                  //         .orderBy('createdAt', descending: false)
+                  //         .limit(1)
+                  //         .get()
+                  //         .then((wvalue) {
+                  //       print("wvalue...$wvalue");
+                  //       // set the counter for user in usercollection
+                  //       // if(userWhstpCounter)
+
+                  //       usersRef
+                  //           .doc(currentUserId.toString().removeAllWhitespace)
+                  //           .update({
+                  //         'whstpJoinStatus': true,
+                  //         'whstpCounter': (userWhstpCounter + 1).toString()
+                  //       }).then((userValue) {
+                  //         userWhstpCounter = userWhstpCounter + 1;
+                  //         // set the counter on whatsapp grp
+                  //         districtRef
+                  //             .doc(currentUserDistrictId
+                  //                 .toString()
+                  //                 .removeAllWhitespace)
+                  //             .collection('vidhansabha')
+                  //             .doc(value.docs[0]['id'])
+                  //             .collection('whatsappgrp')
+                  //             .doc(wvalue.docs[0]['id'])
+                  //             .update({
+                  //           'counter':
+                  //               (int.parse(wvalue.docs[0]['counter']) + 1)
+                  //                   .toString(),
+                  //           'isAdd':
+                  //               (int.parse(wvalue.docs[0]['counter']) < 1008 &&
+                  //                       int.parse(wvalue.docs[0]['counter']) ==
+                  //                           1009)
+                  //                   ? false
+                  //                   : true
+                  //         }).then((disValue) {
+                  //           Get.back();
+                  //           urlLauncher(wvalue.docs[0]['grplink']);
+                  //           Get.back();
+                  //         });
+                  //       });
+                  //     });
+                  //   }
+
+                  //   state1(() {});
+                  // });
+                }),
             const SizedBox(
               height: 20,
             ),
-            CustomBtn(
-                title: '“मैं सेनापति राजस्थान” बनना चाहता हूँ',
-                height: 45,
-                width: double.infinity,
-                onTap: onTap2),
+            currentVolunteerStatus
+                ? Container()
+                : CustomBtn(
+                    title: '“मैं सेनापति राजस्थान” बनना चाहता हूँ',
+                    height: 45,
+                    width: double.infinity,
+                    onTap: () {
+                      userIndex = 5;
+                      state1(() {});
+                    }),
           ],
         ));
   }
 
-  registeredWidget(Function() onTap) {
+  registeredWidget(state1) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: StatefulBuilder(builder: (context, state) {
@@ -742,14 +705,34 @@ class DashboardProvider extends ChangeNotifier {
                 title: 'आगे बढे',
                 height: 45,
                 width: double.infinity,
-                onTap: onTap)
+                onTap: () {
+                  showCircleProgressDialog(context);
+                  usersRef
+                      .where('number', isEqualTo: phoneController.text)
+                      .get()
+                      .then((value) {
+                    Get.back();
+                    userVidhan = value.docs[0]['vidhan'];
+                    currentUserId = value.docs[0]['id'];
+                    currentUserDistrictId = value.docs[0]['districtId'];
+                    currentVolunteerStatus = value.docs[0]['volunteerStatus'];
+                    userWhstpCounter = int.parse(value.docs[0]['whstpCounter']);
+                    userIndex = 4;
+                    state(() {});
+                    state1(() {});
+                  });
+                  notifyListeners();
+                })
           ],
         );
       }),
     );
   }
 
-  chooseBtnToJoin(BuildContext context, Function() onTap1, Function() onTap2) {
+  chooseBtnToJoin(
+    BuildContext context,
+    state1,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Column(
@@ -757,18 +740,37 @@ class DashboardProvider extends ChangeNotifier {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomBtn(
-              title: 'मैं अभियान को समर्थन देता हूँ',
-              height: 50,
-              width: MediaQuery.of(context).size.width * .7,
-              onTap: onTap1),
+            title: 'मैं अभियान को समर्थन देता हूँ',
+            height: MediaQuery.of(context).size.width < 500 ? 65 : 50,
+            width: MediaQuery.of(context).size.width * .7,
+            onTap: () {
+              showCircleProgressDialog(context);
+              usersRef
+                  .where('number', isEqualTo: phoneController.text)
+                  .get()
+                  .then((value) {
+                Get.back();
+                userVidhan = value.docs[0]['vidhan'];
+                currentUserId = value.docs[0]['id'];
+                currentUserDistrictId = value.docs[0]['districtId'];
+                currentVolunteerStatus = value.docs[0]['volunteerStatus'];
+                userWhstpCounter = int.parse(value.docs[0]['whstpCounter']);
+                userIndex = 4;
+                state1(() {});
+              });
+            },
+          ),
           const SizedBox(
             height: 20,
           ),
           CustomBtn(
-            title: '“मैं सेनापति राजस्थान” बनना चाहता हूँ',
-            height: 50,
+            title: '“मैं सेनापति राजस्थान”  बनना चाहता हूँ',
+            height: MediaQuery.of(context).size.width < 500 ? 65 : 50,
             width: MediaQuery.of(context).size.width * .7,
-            onTap: onTap2,
+            onTap: () {
+              userIndex = 5;
+              state1(() {});
+            },
           )
         ],
       ),
@@ -825,63 +827,98 @@ class DashboardProvider extends ChangeNotifier {
                 'आपके पास कौन सा वाहन है?',
                 style: TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
               const SizedBox(
                 height: 8,
               ),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      volunteer1SelectedValue = 'दोपहिया';
-                      notifyListeners();
-                      state(() {});
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Row(
-                        children: [
-                          stringRadioBtn(volunteer1SelectedValue, 'दोपहिया',
-                              volunteer3Validation),
-                          const SizedBox(
-                            width: 8,
+                  Row(
+                    children: [
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          volunteer1SelectedValue = 'दोपहिया';
+                          notifyListeners();
+                          state(() {});
+                        },
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Row(
+                            children: [
+                              stringRadioBtn(volunteer1SelectedValue, 'दोपहिया',
+                                  volunteer3Validation),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              const Text(
+                                'दोपहिया',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                    decoration: TextDecoration.none),
+                              ),
+                            ],
                           ),
-                          const Text(
-                            'दोपहिया',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white,
-                                decoration: TextDecoration.none),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          volunteer1SelectedValue = 'चारपहिया';
+                          state(() {});
+                        },
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Row(
+                            children: [
+                              stringRadioBtn(volunteer1SelectedValue,
+                                  'चारपहिया', volunteer3Validation),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              const Text(
+                                'चारपहिया',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                    decoration: TextDecoration.none),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
-                    width: 20,
+                    height: 15,
                   ),
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      volunteer1SelectedValue = 'चारपहिया';
+                      volunteer1SelectedValue = 'इनमे से कोई नही';
                       state(() {});
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: Row(
                         children: [
-                          stringRadioBtn(volunteer1SelectedValue, 'चारपहिया',
-                              volunteer3Validation),
+                          stringRadioBtn(volunteer1SelectedValue,
+                              'इनमे से कोई नही', volunteer3Validation),
                           const SizedBox(
                             width: 8,
                           ),
                           const Text(
-                            'चारपहिया',
+                            'इनमे से कोई नही',
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -901,7 +938,7 @@ class DashboardProvider extends ChangeNotifier {
                 'क्या आप वर्तमान सरकार की योजनाओं से संतुष्ट हैं?',
                 style: TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
@@ -978,7 +1015,7 @@ class DashboardProvider extends ChangeNotifier {
                 'क्या आप कांग्रेस के विधायक प्रत्याशी के कंधे से कंधा मिलाकर अपने बूथ को मजबूत करने को तैयार हैं?',
                 style: TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
@@ -1054,7 +1091,7 @@ class DashboardProvider extends ChangeNotifier {
                 'क्या आप आने वाले चुनाव में मिली ज़िम्मेदारी को बेहतर भविष्य के लिए निष्ठापूर्वक निभाने हेतु तैयार हैं?',
                 style: TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
@@ -1202,13 +1239,13 @@ class DashboardProvider extends ChangeNotifier {
                             .collection('volunteer')
                             .doc(id)
                             .set({
-                          'volntr1': educationController.text,
-                          'volntr2': businessController.text,
-                          'volntr3': volunteer1SelectedValue,
-                          'volntr4': volunteer2SelectedValue,
-                          'volntr5': volunteer3SelectedValue,
-                          'volntr6': volunteer4SelectedValue,
-                          'volntrId': id
+                          'education': educationController.text,
+                          'occupation': businessController.text,
+                          'vehicle_type': volunteer1SelectedValue,
+                          'govt_statisfaction': volunteer2SelectedValue,
+                          'congress_worker': volunteer3SelectedValue,
+                          'onground_work': volunteer4SelectedValue,
+                          'id': id
                         }).then((value) {
                           userIndex = 6;
                           Get.back();
@@ -1225,7 +1262,7 @@ class DashboardProvider extends ChangeNotifier {
     });
   }
 
-  successfullyRegisteredVolunteer() {
+  successfullyRegisteredVolunteer(BuildContext context, isMobile) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Column(
@@ -1249,7 +1286,59 @@ class DashboardProvider extends ChangeNotifier {
               width: double.infinity,
               onTap: () {
                 Get.back();
-              })
+              }),
+          const SizedBox(
+            height: 20,
+          ),
+          CustomBtn(
+              title: 'व्हाट्सएप ग्रुप में जुड़ें',
+              height: 45,
+              width: double.infinity,
+              onTap: () {
+                showCircleProgressDialog(context);
+                // usersRef.doc(currentUserId).get().then((userValue) {
+
+                // });
+                whatsappRef
+                    .where('nameHindi', isEqualTo: userVidhan)
+                    .get()
+                    .then((value) {
+                  if (value.docs.isNotEmpty) {
+                    whatsappRef
+                        .doc(value.docs[0]['id'])
+                        .collection('whatsLink')
+                        .orderBy('createdAt', descending: false)
+                        .limit(1)
+                        .get()
+                        .then((value1) {
+                      usersRef
+                          .doc(currentUserId.toString().removeAllWhitespace)
+                          .update({
+                        'whstpJoinStatus': true,
+                        'whstpCounter': (userWhstpCounter + 1).toString()
+                      }).then((value2) {
+                        userWhstpCounter = userWhstpCounter + 1;
+                        whatsappRef
+                            .doc(value.docs[0]['id'])
+                            .collection('whatsLink')
+                            .doc(value1.docs[0]['id'])
+                            .update({
+                          'counter': (int.parse(value1.docs[0]['counter']) + 1)
+                              .toString(),
+                        }).then((value3) {
+                          Get.back();
+                          urlLauncher(value1.docs[0]['grplink']);
+                          Get.back();
+                        });
+                      });
+                    });
+                  } else {
+                    Get.back();
+                    showErrorDialog(
+                        context, isMobile, 'व्हाट्सएप ग्रुप उपलब्ध नहीं है');
+                  }
+                });
+              }),
         ],
       ),
     );
@@ -1312,7 +1401,7 @@ class DashboardProvider extends ChangeNotifier {
                           shrinkWrap: true,
                           itemCount: route == 'district'
                               ? districtList.length
-                              : districtList[selectedIndex]['vidhan'].length,
+                              : vidhanList.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               behavior: HitTestBehavior.opaque,
@@ -1320,9 +1409,11 @@ class DashboardProvider extends ChangeNotifier {
                                 if (route == 'district') {
                                   selectedDistrict = index;
                                   districtController.text =
-                                      districtList[index]['name'];
+                                      districtList[index]['nameHindi'];
                                   currentUserDistrictId =
                                       districtList[index]['id'];
+                                  fetchVidhanData(
+                                      districtList[index]['districtCode']);
                                   selectedIndex = index;
                                   isVidhanRead = false;
                                   vidhanController.clear();
@@ -1330,8 +1421,7 @@ class DashboardProvider extends ChangeNotifier {
                                 } else {
                                   selectedVidhan = index;
                                   vidhanController.text =
-                                      districtList[selectedIndex]['vidhan']
-                                          [index];
+                                      vidhanList[index]['nameHindi'];
                                 }
                                 Get.back();
                               },
@@ -1343,9 +1433,8 @@ class DashboardProvider extends ChangeNotifier {
                                     children: [
                                       Text(
                                         route == 'district'
-                                            ? districtList[index]['name']
-                                            : districtList[selectedIndex]
-                                                ['vidhan'][index],
+                                            ? districtList[index]['nameHindi']
+                                            : vidhanList[index]['nameHindi'],
                                         style: const TextStyle(fontSize: 17),
                                       ),
                                       const Spacer(),
@@ -1716,6 +1805,46 @@ class DashboardProvider extends ChangeNotifier {
           decoration:
               const BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
         ));
+  }
+
+  showErrorDialog(BuildContext context, isMobile, String title) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            contentPadding: const EdgeInsets.all(0),
+            insetPadding: EdgeInsets.zero,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            content: Container(
+              padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+              constraints: BoxConstraints(
+                  maxHeight: 100,
+                  minHeight: 100,
+                  maxWidth:
+                      isMobile ? MediaQuery.of(context).size.width - 50 : 200,
+                  minWidth:
+                      isMobile ? MediaQuery.of(context).size.width - 50 : 200),
+              child: Column(
+                children: [
+                  Text(title),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomBtn(
+                      title: "ठीक है",
+                      height: 45,
+                      width: 100,
+                      onTap: () {
+                        Get.back();
+                        Get.back();
+                      })
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   urlLauncher(String url) async {

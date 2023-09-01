@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sarkar/utils/buildtextfield.dart';
-import 'package:sarkar/utils/firebaseauth.dart';
+import 'package:mainsenapatirajasthan/utils/buildtextfield.dart';
+import 'package:mainsenapatirajasthan/utils/firebaseauth.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

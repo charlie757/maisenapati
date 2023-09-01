@@ -13,7 +13,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   @override
   Widget build(BuildContext context) {
     final headingStyle = TextStyle(
-        fontSize: 30, color: Colors.black, fontWeight: FontWeight.w400);
+        fontSize: 27, color: Colors.black, fontWeight: FontWeight.w400);
 
     final style = TextStyle(
         fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400);
@@ -39,11 +39,11 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
 
   header(style) {
     return Container(
-      height: 100,
+      height: 120,
       width: double.infinity,
       alignment: Alignment.center,
       color: const Color(0xffbd9766),
-      padding: const EdgeInsets.only(left: 30, right: 30),
+      padding: const EdgeInsets.only(left: 20, right: 20),
       child: Text(
         'मैं सेनापति राजस्थान - Main Senapati Rajasthan',
         style: style,
