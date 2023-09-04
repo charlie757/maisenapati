@@ -10,6 +10,7 @@ class FirebaseAuthentication {
     ConfirmationResult confirmationResult = await auth.signInWithPhoneNumber(
       '+91 $phoneNumber',
     );
+    // auth.verifyPhoneNumber(verificationCompleted: verificationCompleted, verificationFailed: verificationFailed, codeSent: codeSent, codeAutoRetrievalTimeout: codeAutoRetrievalTimeout)
     printMessage("OTP Sent to +91 $phoneNumber");
     return confirmationResult;
   }

@@ -1,5 +1,5 @@
 name: mainsenapatirajasthan
-description: A new Flutter project.
+description: सम्मान की राजनीति है मेरी पहचान ।।
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -42,6 +42,8 @@ dependencies:
   url_strategy: ^0.2.0
   url_launcher:
   lottie:
+  super_tooltip:
+  firebase_analytics:
   firebase_core_platform_interface: 4.5.1
   
 
@@ -103,6 +105,9 @@ flutter:
       - family: tekoSemi
         fonts:
         - asset: assets/fonts/Teko-SemiBold.ttf
+      - family: kadwaRegular
+        fonts:
+        - asset: assets/fonts/Kadwa-Regular.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

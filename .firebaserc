@@ -1,7 +1,7 @@
 {
   "projects": {
     "default": "mainsenapatirajasthan",
-    "staging": "senapati-d469d",
+    "staging": "mainsenapatirajasthan",
     "production": "mainsenapatirajasthan"
   },
   "targets": {},

@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +8,7 @@ import 'package:mainsenapatirajasthan/utils/showcircleprogressdialog.dart';
 import 'package:mainsenapatirajasthan/helper.dart/custombtn.dart';
 import 'package:mainsenapatirajasthan/helper.dart/customtextfield.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:super_tooltip/super_tooltip.dart';
 
 class DashboardProvider extends ChangeNotifier {
   // 0---default form
@@ -19,6 +18,8 @@ class DashboardProvider extends ChangeNotifier {
   //4-- spread
   // 5--- volunteer form
   // 6--- volunteer form submit msg
+  //  final  controller = SuperTooltipController();
+
   late String verificationId;
   int timer = 10;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -126,6 +127,7 @@ class DashboardProvider extends ChangeNotifier {
     });
   }
 
+  // FirebaseAuthentication firebaseAuthentication = FirebaseAuthentication();
   login(BuildContext context, isMobile, PhoneCodeSent codeSent) async {
     await _auth.verifyPhoneNumber(
       phoneNumber: '+91 ${phoneController.text}',
@@ -221,7 +223,7 @@ class DashboardProvider extends ChangeNotifier {
                       decoration: const BoxDecoration(color: Colors.white24),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 15,
                     ),
                     const Text(
                       'इस बार राज नहीं\nरिवाज बदलेगा',
@@ -392,7 +394,11 @@ class DashboardProvider extends ChangeNotifier {
                 }
                 if (ageController.text.isEmpty) {
                   ageValidation = true;
-                } else {
+                }
+                // else if (int.parse(ageController.text) < 18) {
+                //   ageValidation = true;
+                // }
+                else {
                   ageValidation = false;
                 }
                 if (gendorController.text.isEmpty) {
@@ -428,7 +434,8 @@ class DashboardProvider extends ChangeNotifier {
                         'whstpJoinStatus': false,
                         'whstpCounter': '0',
                         'districtId': currentUserDistrictId,
-                        'createdAt': FieldValue.serverTimestamp()
+                        'createdAt': FieldValue.serverTimestamp(),
+                        'updateAt': '',
                       }).then((value) {
                         login(context, isMobile,
                             (verificationId, resendingToken) async {
@@ -471,19 +478,21 @@ class DashboardProvider extends ChangeNotifier {
 
   otpWidget(BuildContext context, state1) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 20),
       child: Column(
         children: [
           CustomTextfield(
+              textInputType: TextInputType.number,
               inputFormatters: [
-                FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                LengthLimitingTextInputFormatter(6)
               ],
               isValidation: otpValidation,
               hintText: 'कृपया अपना ओटीपी दर्ज करें',
               controller: otpController,
               onTap: () {}),
           const SizedBox(
-            height: 15,
+            height: 20,
           ),
           CustomBtn(
               title: 'ओटीपी दर्ज करें',
@@ -538,13 +547,15 @@ class DashboardProvider extends ChangeNotifier {
 
   spreadWidget(state1, BuildContext context, isMobile) {
     return Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20),
+        padding:
+            const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
         child: Column(
           children: [
             Text(
               '$userVidhan विधानसभा के “मैं सेनापति राजस्थान” की टीम से जुड़ने के लिए नीचे दिए बटन पर क्लिक करें',
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.justify,
               style: const TextStyle(
+                height: 1.4,
                 decoration: TextDecoration.none,
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -556,7 +567,7 @@ class DashboardProvider extends ChangeNotifier {
             ),
             CustomBtn(
                 title: 'व्हाट्सएप ग्रुप में जुड़ें',
-                height: 45,
+                height: MediaQuery.of(context).size.width < 500 ? 65 : 50,
                 width: double.infinity,
                 onTap: () {
                   showCircleProgressDialog(context);
@@ -603,67 +614,6 @@ class DashboardProvider extends ChangeNotifier {
                           context, isMobile, 'व्हाट्सएप ग्रुप उपलब्ध नहीं है');
                     }
                   });
-                  // districtRef
-                  //     .doc(currentUserDistrictId.toString().removeAllWhitespace)
-                  //     .collection('vidhansabha')
-                  //     .where('nameHindi', isEqualTo: userVidhan)
-                  //     .get()
-                  //     .then((value) {
-                  //   if (value.docs.isEmpty) {
-                  //     Get.back();
-                  //   } else {
-                  //     districtRef
-                  //         .doc(currentUserDistrictId
-                  //             .toString()
-                  //             .removeAllWhitespace)
-                  //         .collection('vidhansabha')
-                  //         .doc(value.docs[0]['id'])
-                  //         .collection('whatsappgrp')
-                  //         .orderBy('createdAt', descending: false)
-                  //         .limit(1)
-                  //         .get()
-                  //         .then((wvalue) {
-                  //       print("wvalue...$wvalue");
-                  //       // set the counter for user in usercollection
-                  //       // if(userWhstpCounter)
-
-                  //       usersRef
-                  //           .doc(currentUserId.toString().removeAllWhitespace)
-                  //           .update({
-                  //         'whstpJoinStatus': true,
-                  //         'whstpCounter': (userWhstpCounter + 1).toString()
-                  //       }).then((userValue) {
-                  //         userWhstpCounter = userWhstpCounter + 1;
-                  //         // set the counter on whatsapp grp
-                  //         districtRef
-                  //             .doc(currentUserDistrictId
-                  //                 .toString()
-                  //                 .removeAllWhitespace)
-                  //             .collection('vidhansabha')
-                  //             .doc(value.docs[0]['id'])
-                  //             .collection('whatsappgrp')
-                  //             .doc(wvalue.docs[0]['id'])
-                  //             .update({
-                  //           'counter':
-                  //               (int.parse(wvalue.docs[0]['counter']) + 1)
-                  //                   .toString(),
-                  //           'isAdd':
-                  //               (int.parse(wvalue.docs[0]['counter']) < 1008 &&
-                  //                       int.parse(wvalue.docs[0]['counter']) ==
-                  //                           1009)
-                  //                   ? false
-                  //                   : true
-                  //         }).then((disValue) {
-                  //           Get.back();
-                  //           urlLauncher(wvalue.docs[0]['grplink']);
-                  //           Get.back();
-                  //         });
-                  //       });
-                  //     });
-                  //   }
-
-                  //   state1(() {});
-                  // });
                 }),
             const SizedBox(
               height: 20,
@@ -672,7 +622,7 @@ class DashboardProvider extends ChangeNotifier {
                 ? Container()
                 : CustomBtn(
                     title: '“मैं सेनापति राजस्थान” बनना चाहता हूँ',
-                    height: 45,
+                    height: MediaQuery.of(context).size.width < 500 ? 65 : 50,
                     width: double.infinity,
                     onTap: () {
                       userIndex = 5;
@@ -684,7 +634,7 @@ class DashboardProvider extends ChangeNotifier {
 
   registeredWidget(state1) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
       child: StatefulBuilder(builder: (context, state) {
         return Column(
           children: [
@@ -734,7 +684,7 @@ class DashboardProvider extends ChangeNotifier {
     state1,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -827,12 +777,14 @@ class DashboardProvider extends ChangeNotifier {
                 'आपके पास कौन सा वाहन है?',
                 style: TextStyle(
                     fontSize: 17,
+                    height: 1.4,
+                    letterSpacing: .8,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
               const SizedBox(
-                height: 8,
+                height: 10,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -858,6 +810,7 @@ class DashboardProvider extends ChangeNotifier {
                               const Text(
                                 'दोपहिया',
                                 style: TextStyle(
+                                    fontFamily: 'kadwaRegular',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.white,
@@ -888,6 +841,7 @@ class DashboardProvider extends ChangeNotifier {
                               const Text(
                                 'चारपहिया',
                                 style: TextStyle(
+                                    fontFamily: 'kadwaRegular',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.white,
@@ -920,6 +874,7 @@ class DashboardProvider extends ChangeNotifier {
                           const Text(
                             'इनमे से कोई नही',
                             style: TextStyle(
+                                fontFamily: 'kadwaRegular',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.white,
@@ -938,12 +893,14 @@ class DashboardProvider extends ChangeNotifier {
                 'क्या आप वर्तमान सरकार की योजनाओं से संतुष्ट हैं?',
                 style: TextStyle(
                     fontSize: 17,
+                    height: 1.4,
+                    letterSpacing: .8,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
               const SizedBox(
-                height: 8,
+                height: 10,
               ),
               Row(
                 children: [
@@ -966,6 +923,7 @@ class DashboardProvider extends ChangeNotifier {
                           const Text(
                             'हां',
                             style: TextStyle(
+                                fontFamily: 'kadwaRegular',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.white,
@@ -997,6 +955,7 @@ class DashboardProvider extends ChangeNotifier {
                           const Text(
                             'ना',
                             style: TextStyle(
+                                fontFamily: 'kadwaRegular',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.white,
@@ -1015,12 +974,14 @@ class DashboardProvider extends ChangeNotifier {
                 'क्या आप कांग्रेस के विधायक प्रत्याशी के कंधे से कंधा मिलाकर अपने बूथ को मजबूत करने को तैयार हैं?',
                 style: TextStyle(
                     fontSize: 17,
+                    height: 1.4,
+                    letterSpacing: .8,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
               const SizedBox(
-                height: 8,
+                height: 10,
               ),
               Row(
                 children: [
@@ -1042,6 +1003,7 @@ class DashboardProvider extends ChangeNotifier {
                           const Text(
                             'हां',
                             style: TextStyle(
+                                fontFamily: 'kadwaRegular',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.white,
@@ -1073,6 +1035,7 @@ class DashboardProvider extends ChangeNotifier {
                           const Text(
                             'ना',
                             style: TextStyle(
+                                fontFamily: 'kadwaRegular',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.white,
@@ -1091,12 +1054,14 @@ class DashboardProvider extends ChangeNotifier {
                 'क्या आप आने वाले चुनाव में मिली ज़िम्मेदारी को बेहतर भविष्य के लिए निष्ठापूर्वक निभाने हेतु तैयार हैं?',
                 style: TextStyle(
                     fontSize: 17,
+                    height: 1.4,
+                    letterSpacing: .8,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
               const SizedBox(
-                height: 8,
+                height: 10,
               ),
               Row(
                 children: [
@@ -1119,6 +1084,7 @@ class DashboardProvider extends ChangeNotifier {
                           const Text(
                             'हां',
                             style: TextStyle(
+                                fontFamily: 'kadwaRegular',
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14,
                                 color: Colors.white,
@@ -1151,6 +1117,7 @@ class DashboardProvider extends ChangeNotifier {
                             'ना',
                             style: TextStyle(
                                 fontSize: 14,
+                                fontFamily: 'kadwaRegular',
                                 fontWeight: FontWeight.w400,
                                 color: Colors.white,
                                 decoration: TextDecoration.none),
@@ -1287,58 +1254,58 @@ class DashboardProvider extends ChangeNotifier {
               onTap: () {
                 Get.back();
               }),
-          const SizedBox(
-            height: 20,
-          ),
-          CustomBtn(
-              title: 'व्हाट्सएप ग्रुप में जुड़ें',
-              height: 45,
-              width: double.infinity,
-              onTap: () {
-                showCircleProgressDialog(context);
-                // usersRef.doc(currentUserId).get().then((userValue) {
+          // const SizedBox(
+          //   height: 20,
+          // ),
+          // CustomBtn(
+          //     title: 'व्हाट्सएप ग्रुप में जुड़ें',
+          //     height: 45,
+          //     width: double.infinity,
+          //     onTap: () {
+          //       showCircleProgressDialog(context);
+          //       // usersRef.doc(currentUserId).get().then((userValue) {
 
-                // });
-                whatsappRef
-                    .where('nameHindi', isEqualTo: userVidhan)
-                    .get()
-                    .then((value) {
-                  if (value.docs.isNotEmpty) {
-                    whatsappRef
-                        .doc(value.docs[0]['id'])
-                        .collection('whatsLink')
-                        .orderBy('createdAt', descending: false)
-                        .limit(1)
-                        .get()
-                        .then((value1) {
-                      usersRef
-                          .doc(currentUserId.toString().removeAllWhitespace)
-                          .update({
-                        'whstpJoinStatus': true,
-                        'whstpCounter': (userWhstpCounter + 1).toString()
-                      }).then((value2) {
-                        userWhstpCounter = userWhstpCounter + 1;
-                        whatsappRef
-                            .doc(value.docs[0]['id'])
-                            .collection('whatsLink')
-                            .doc(value1.docs[0]['id'])
-                            .update({
-                          'counter': (int.parse(value1.docs[0]['counter']) + 1)
-                              .toString(),
-                        }).then((value3) {
-                          Get.back();
-                          urlLauncher(value1.docs[0]['grplink']);
-                          Get.back();
-                        });
-                      });
-                    });
-                  } else {
-                    Get.back();
-                    showErrorDialog(
-                        context, isMobile, 'व्हाट्सएप ग्रुप उपलब्ध नहीं है');
-                  }
-                });
-              }),
+          //       // });
+          //       whatsappRef
+          //           .where('nameHindi', isEqualTo: userVidhan)
+          //           .get()
+          //           .then((value) {
+          //         if (value.docs.isNotEmpty) {
+          //           whatsappRef
+          //               .doc(value.docs[0]['id'])
+          //               .collection('whatsLink')
+          //               .orderBy('createdAt', descending: false)
+          //               .limit(1)
+          //               .get()
+          //               .then((value1) {
+          //             usersRef
+          //                 .doc(currentUserId.toString().removeAllWhitespace)
+          //                 .update({
+          //               'whstpJoinStatus': true,
+          //               'whstpCounter': (userWhstpCounter + 1).toString()
+          //             }).then((value2) {
+          //               userWhstpCounter = userWhstpCounter + 1;
+          //               whatsappRef
+          //                   .doc(value.docs[0]['id'])
+          //                   .collection('whatsLink')
+          //                   .doc(value1.docs[0]['id'])
+          //                   .update({
+          //                 'counter': (int.parse(value1.docs[0]['counter']) + 1)
+          //                     .toString(),
+          //               }).then((value3) {
+          //                 Get.back();
+          //                 urlLauncher(value1.docs[0]['grplink']);
+          //                 Get.back();
+          //               });
+          //             });
+          //           });
+          //         } else {
+          //           Get.back();
+          //           showErrorDialog(
+          //               context, isMobile, 'व्हाट्सएप ग्रुप उपलब्ध नहीं है');
+          //         }
+          //       });
+          //     }),
         ],
       ),
     );
@@ -1397,6 +1364,7 @@ class DashboardProvider extends ChangeNotifier {
                               height: 10,
                             );
                           },
+                          padding: const EdgeInsets.only(bottom: 10),
                           physics: const ScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: route == 'district'
@@ -1427,7 +1395,7 @@ class DashboardProvider extends ChangeNotifier {
                               },
                               child: MouseRegion(
                                 cursor: SystemMouseCursors.click,
-                                child: Container(
+                                child: SizedBox(
                                   height: 30,
                                   child: Row(
                                     children: [
@@ -1435,7 +1403,9 @@ class DashboardProvider extends ChangeNotifier {
                                         route == 'district'
                                             ? districtList[index]['nameHindi']
                                             : vidhanList[index]['nameHindi'],
-                                        style: const TextStyle(fontSize: 17),
+                                        style: const TextStyle(
+                                            fontSize: 17,
+                                            fontFamily: 'kadwaRegular'),
                                       ),
                                       const Spacer(),
                                       radioBtn(

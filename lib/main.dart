@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -12,7 +13,9 @@ import 'package:mainsenapatirajasthan/privacypolicy.dart';
 import 'package:mainsenapatirajasthan/providers/dashboardprovider.dart';
 import 'package:mainsenapatirajasthan/utils/routes.dart';
 import 'package:url_strategy/url_strategy.dart';
+import 'package:firebase_analytics/observer.dart';
 
+final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 void main() async {
   setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +25,7 @@ void main() async {
         options: const FirebaseOptions(
       apiKey: "AIzaSyD5Nk_h8zcURXw_J62niBdh7weiNx1CdFE",
       projectId: "mainsenapatirajasthan",
+      authDomain: "mainsenapatirajasthan",
       messagingSenderId: "652413472184",
       appId: "1:652413472184:web:7aa24e3c8c271b9f4a534d",
     ));
@@ -32,10 +36,25 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    analytics.logEvent(
+      name: 'open website',
+      parameters: {'isOpen': 'yes'},
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -59,6 +78,9 @@ class MyApp extends StatelessWidget {
           ],
         ),
         debugShowCheckedModeBanner: false,
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
         onGenerateRoute: (settings) {
           if (settings.name == '/home') {
             return MaterialPageRoute(builder: (_) => Dashboard());

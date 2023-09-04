@@ -69,7 +69,8 @@ Widget mobileTabletDesign(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             socialContainer('assets/lottie/lottie4.json', () {
-              urlLauncher('https://www.facebook.com/MainSenapatiRajasthan/');
+              urlLauncher(
+                  'https://www.facebook.com/profile.php?id=61550967207777');
             }),
             const SizedBox(
               width: 10,
@@ -87,7 +88,7 @@ Widget mobileTabletDesign(BuildContext context) {
             //   width: 10,
             // ),
             socialContainer('assets/lottie/lottie6.json', () {
-              urlLauncher('https://www.instagram.com/mainsenapatirajasthan/');
+              urlLauncher('https://www.instagram.com/mainsenapatiraj/');
             }),
           ],
         ),
@@ -148,7 +149,7 @@ Widget webDesign(BuildContext context) {
         ),
         const Spacer(),
         socialContainer('assets/lottie/lottie4.json', () {
-          urlLauncher('https://www.facebook.com/MainSenapatiRajasthan/');
+          urlLauncher('https://www.facebook.com/profile.php?id=61550967207777');
         }),
         const SizedBox(
           width: 15,
@@ -166,7 +167,7 @@ Widget webDesign(BuildContext context) {
           width: 15,
         ),
         socialContainer('assets/lottie/lottie6.json', () {
-          urlLauncher('https://www.instagram.com/mainsenapatirajasthan/');
+          urlLauncher('https://www.instagram.com/mainsenapatiraj/');
         }),
         const Spacer(),
         const Text(
